@@ -1,23 +1,36 @@
-# ✨ Welcome to Your Spark Template!
-You've just launched your brand-new Spark Template Codespace — everything’s fired up and ready for you to explore, build, and create with Spark!
+# Circuit Sketch - F1 Track Matcher
 
-This template is your blank canvas. It comes with a minimal setup to help you get started quickly with Spark development.
+Draw shapes and match them against real Formula 1 circuit layouts! This interactive web application uses shape recognition algorithms to find the best matching F1 circuits and provides detailed information from Wikipedia.
 
-🚀 What's Inside?
-- A clean, minimal Spark environment
-- Pre-configured for local development
-- Ready to scale with your ideas
-  
-🧠 What Can You Do?
+## Features
 
-Right now, this is just a starting point — the perfect place to begin building and testing your Spark applications.
+- 🎨 **Draw to Match**: Draw shapes with your finger or mouse and instantly match them against F1 circuits
+- 🏎️ **Browse Circuits**: Explore all available F1 circuits with detailed layouts and information
+- 📊 **Multiple Algorithms**: Choose between Hausdorff distance, Frechet distance, or turning angle matching
+- 📚 **Live Wikipedia Data**: Get up-to-date facts and statistics from Wikipedia with visible loading progress
+- 🌓 **Dark Mode**: Full dark mode support for comfortable viewing
+- 💾 **Local Circuit Data**: Circuit layouts are stored locally for instant matching (no loading delays!)
 
-🧹 Just Exploring?
-No problem! If you were just checking things out and don’t need to keep this code:
+## Circuit Data
 
-- Simply delete your Spark.
-- Everything will be cleaned up — no traces left behind.
+Circuit layouts are pre-fetched from the [bacinger/f1-circuits](https://github.com/bacinger/f1-circuits) repository and stored locally in `src/data/circuits.json`. This ensures instant matching without network delays.
 
-📄 License For Spark Template Resources 
+Facts and statistics are fetched live from Wikipedia when viewing a circuit, with a progress indicator showing the loading status.
+
+### Adding More Circuits
+
+To add more circuits to the database:
+
+1. Add the circuit layout data to `src/data/circuits.json`
+2. Add the Wikipedia page mapping to `src/data/wikipedia-mapping.ts`
+3. The circuit will automatically be available for matching and browsing
+
+## Development
+
+```bash
+npm run dev
+```
+
+## License
 
 The Spark Template files and resources from GitHub are licensed under the terms of the MIT license, Copyright GitHub, Inc.

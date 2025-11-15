@@ -1,8 +1,11 @@
+import { useEffect, useState } from 'react'
 import { Circuit } from '@/lib/circuits'
+import { loadCircuitWithWikipedia } from '@/lib/circuit-loader'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
+import { Progress } from '@/components/ui/progress'
 import { Flag, MapPin } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 
@@ -12,6 +15,28 @@ interface CircuitCardProps {
 }
 
 export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
+  const [enrichedCircuit, setEnrichedCircuit] = useState<Circuit>(circuit)
+  const [loadingProgress, setLoadingProgress] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (circuit.facts.length === 0 || circuit.length === 'Loading...') {
+      setIsLoading(true)
+      setLoadingProgress(0)
+      
+      loadCircuitWithWikipedia(circuit.id, (progress) => {
+        setLoadingProgress(progress * 100)
+      }).then(loaded => {
+        if (loaded) {
+          setEnrichedCircuit(loaded)
+        }
+        setIsLoading(false)
+      })
+    } else {
+      setEnrichedCircuit(circuit)
+    }
+  }, [circuit.id])
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -23,11 +48,11 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <CardTitle className="text-2xl font-semibold leading-tight mb-2">
-                {circuit.name}
+                {enrichedCircuit.name}
               </CardTitle>
               <CardDescription className="flex items-center gap-1.5 text-base">
                 <MapPin size={16} weight="fill" className="text-muted-foreground" />
-                {circuit.location}
+                {enrichedCircuit.location}
               </CardDescription>
             </div>
             <Badge 
@@ -41,30 +66,39 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
         
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            {circuit.firstGP && (
+            {enrichedCircuit.firstGP && (
               <Badge variant="outline" className="gap-1.5">
                 <Flag size={14} weight="fill" />
-                First GP: {circuit.firstGP}
+                First GP: {enrichedCircuit.firstGP}
               </Badge>
             )}
-            {circuit.length && circuit.length !== 'N/A' && (
+            {enrichedCircuit.length && enrichedCircuit.length !== 'N/A' && enrichedCircuit.length !== 'Loading...' && (
               <Badge variant="outline">
-                Length: {circuit.length}
+                Length: {enrichedCircuit.length}
               </Badge>
             )}
-            {circuit.corners > 0 && (
+            {enrichedCircuit.corners > 0 && (
               <Badge variant="outline">
-                Corners: {circuit.corners}
+                Corners: {enrichedCircuit.corners}
               </Badge>
             )}
-            {circuit.lapRecord && (
+            {enrichedCircuit.lapRecord && (
               <Badge variant="outline" className="hidden sm:inline-flex">
-                Record: {circuit.lapRecord}
+                Record: {enrichedCircuit.lapRecord}
               </Badge>
             )}
           </div>
 
-          {circuit.facts && circuit.facts.length > 0 && (
+          {isLoading && (
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">
+                Loading information from Wikipedia...
+              </div>
+              <Progress value={loadingProgress} className="h-2" />
+            </div>
+          )}
+
+          {!isLoading && enrichedCircuit.facts && enrichedCircuit.facts.length > 0 && (
             <>
               <Separator />
 
@@ -74,7 +108,7 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
                 </h4>
                 <ScrollArea className="h-[200px] pr-4">
                   <ul className="space-y-3">
-                    {circuit.facts.map((fact, index) => (
+                    {enrichedCircuit.facts.map((fact, index) => (
                       <motion.li
                         key={index}
                         initial={{ opacity: 0, x: -10 }}

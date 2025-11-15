@@ -1,57 +1,9 @@
 import { Circuit } from './circuits'
+import { CircuitBase } from '@/data/circuit-types'
+import circuitsDataRaw from '@/data/circuits.json'
+import { WIKIPEDIA_MAPPING } from '@/data/wikipedia-mapping'
 
-const CIRCUITS_REPO_BASE = 'https://raw.githubusercontent.com/bacinger/f1-circuits/master/circuits'
-
-export interface CircuitData {
-  name: string
-  location: string
-  country: string
-  layout: { x: number; y: number }[]
-  wikipediaUrl?: string
-}
-
-const CIRCUIT_MAPPING = [
-  { id: 'albert_park', name: 'Albert Park Circuit', country: 'Australia', location: 'Melbourne, Australia', wiki: 'Melbourne_Grand_Prix_Circuit' },
-  { id: 'americas', name: 'Circuit of the Americas', country: 'USA', location: 'Austin, Texas', wiki: 'Circuit_of_the_Americas' },
-  { id: 'bahrain', name: 'Bahrain International Circuit', country: 'Bahrain', location: 'Sakhir, Bahrain', wiki: 'Bahrain_International_Circuit' },
-  { id: 'baku', name: 'Baku City Circuit', country: 'Azerbaijan', location: 'Baku, Azerbaijan', wiki: 'Baku_City_Circuit' },
-  { id: 'catalunya', name: 'Circuit de Barcelona-Catalunya', country: 'Spain', location: 'Barcelona, Spain', wiki: 'Circuit_de_Barcelona-Catalunya' },
-  { id: 'hockenheimring', name: 'Hockenheimring', country: 'Germany', location: 'Hockenheim, Germany', wiki: 'Hockenheimring' },
-  { id: 'hungaroring', name: 'Hungaroring', country: 'Hungary', location: 'Budapest, Hungary', wiki: 'Hungaroring' },
-  { id: 'imola', name: 'Autodromo Enzo e Dino Ferrari', country: 'Italy', location: 'Imola, Italy', wiki: 'Imola_Circuit' },
-  { id: 'interlagos', name: 'Autódromo José Carlos Pace', country: 'Brazil', location: 'São Paulo, Brazil', wiki: 'Autódromo_José_Carlos_Pace' },
-  { id: 'jeddah', name: 'Jeddah Corniche Circuit', country: 'Saudi Arabia', location: 'Jeddah, Saudi Arabia', wiki: 'Jeddah_Street_Circuit' },
-  { id: 'marina_bay', name: 'Marina Bay Street Circuit', country: 'Singapore', location: 'Singapore', wiki: 'Marina_Bay_Street_Circuit' },
-  { id: 'miami', name: 'Miami International Autodrome', country: 'USA', location: 'Miami, Florida', wiki: 'Miami_International_Autodrome' },
-  { id: 'monaco', name: 'Circuit de Monaco', country: 'Monaco', location: 'Monte Carlo, Monaco', wiki: 'Circuit_de_Monaco' },
-  { id: 'monza', name: 'Autodromo Nazionale di Monza', country: 'Italy', location: 'Monza, Italy', wiki: 'Monza_Circuit' },
-  { id: 'red_bull_ring', name: 'Red Bull Ring', country: 'Austria', location: 'Spielberg, Austria', wiki: 'Red_Bull_Ring' },
-  { id: 'rodriguez', name: 'Autódromo Hermanos Rodríguez', country: 'Mexico', location: 'Mexico City, Mexico', wiki: 'Autódromo_Hermanos_Rodríguez' },
-  { id: 'saudi_arabia', name: 'Jeddah Corniche Circuit', country: 'Saudi Arabia', location: 'Jeddah, Saudi Arabia', wiki: 'Jeddah_Street_Circuit' },
-  { id: 'shanghai', name: 'Shanghai International Circuit', country: 'China', location: 'Shanghai, China', wiki: 'Shanghai_International_Circuit' },
-  { id: 'silverstone', name: 'Silverstone Circuit', country: 'United Kingdom', location: 'Silverstone, England', wiki: 'Silverstone_Circuit' },
-  { id: 'spa', name: 'Circuit de Spa-Francorchamps', country: 'Belgium', location: 'Spa, Belgium', wiki: 'Circuit_de_Spa-Francorchamps' },
-  { id: 'suzuka', name: 'Suzuka International Racing Course', country: 'Japan', location: 'Suzuka, Japan', wiki: 'Suzuka_Circuit' },
-  { id: 'vegas', name: 'Las Vegas Street Circuit', country: 'USA', location: 'Las Vegas, Nevada', wiki: 'Las_Vegas_Grand_Prix' },
-  { id: 'villeneuve', name: 'Circuit Gilles Villeneuve', country: 'Canada', location: 'Montreal, Canada', wiki: 'Circuit_Gilles_Villeneuve' },
-  { id: 'yas_marina', name: 'Yas Marina Circuit', country: 'UAE', location: 'Abu Dhabi, UAE', wiki: 'Yas_Marina_Circuit' },
-  { id: 'zandvoort', name: 'Circuit Zandvoort', country: 'Netherlands', location: 'Zandvoort, Netherlands', wiki: 'Circuit_Zandvoort' },
-]
-
-async function fetchCircuitLayout(circuitId: string): Promise<{ x: number; y: number }[]> {
-  try {
-    const response = await fetch(`${CIRCUITS_REPO_BASE}/${circuitId}.json`)
-    if (!response.ok) {
-      console.warn(`Failed to fetch circuit ${circuitId}:`, response.statusText)
-      return []
-    }
-    const data = await response.json()
-    return data
-  } catch (error) {
-    console.error(`Error loading circuit ${circuitId}:`, error)
-    return []
-  }
-}
+const circuitsData = circuitsDataRaw as CircuitBase[]
 
 interface WikiData {
   facts: string[]
@@ -61,10 +13,16 @@ interface WikiData {
   corners?: number
 }
 
-async function fetchWikipediaData(wikipediaTitle: string): Promise<WikiData> {
+export async function fetchWikipediaData(
+  wikipediaTitle: string,
+  onProgress?: (progress: number) => void
+): Promise<WikiData> {
   try {
+    onProgress?.(0.2)
     const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikipediaTitle)}`
     const summaryResponse = await fetch(summaryUrl)
+    
+    onProgress?.(0.5)
     
     if (!summaryResponse.ok) {
       console.warn(`Failed to fetch Wikipedia data for ${wikipediaTitle}`)
@@ -78,6 +36,8 @@ async function fetchWikipediaData(wikipediaTitle: string): Promise<WikiData> {
     }
 
     const summaryData = await summaryResponse.json()
+    
+    onProgress?.(0.7)
     
     const facts: string[] = []
     
@@ -120,6 +80,8 @@ async function fetchWikipediaData(wikipediaTitle: string): Promise<WikiData> {
       console.warn('Could not fetch additional stats from Wikipedia HTML')
     }
 
+    onProgress?.(1)
+
     return {
       facts: facts.length > 0 ? facts : ['Racing circuit with rich Formula 1 history'],
       ...additionalStats
@@ -136,45 +98,44 @@ async function fetchWikipediaData(wikipediaTitle: string): Promise<WikiData> {
   }
 }
 
-export async function loadCircuit(circuitId: string): Promise<Circuit | null> {
-  const mapping = CIRCUIT_MAPPING.find(m => m.id === circuitId)
-  if (!mapping) {
-    console.warn(`No mapping found for circuit ${circuitId}`)
+export function loadAllCircuits(): Circuit[] {
+  return circuitsData.map(circuit => ({
+    ...circuit,
+    facts: [],
+    length: 'Loading...',
+    lapRecord: undefined,
+    firstGP: undefined,
+    corners: 0
+  }))
+}
+
+export async function loadCircuitWithWikipedia(
+  circuitId: string,
+  onProgress?: (progress: number) => void
+): Promise<Circuit | null> {
+  const circuitBase = circuitsData.find(c => c.id === circuitId)
+  if (!circuitBase) {
     return null
   }
 
-  const [layout, wikiData] = await Promise.all([
-    fetchCircuitLayout(circuitId),
-    mapping.wiki ? fetchWikipediaData(mapping.wiki) : Promise.resolve({
-      facts: [],
-      length: undefined,
-      lapRecord: undefined,
-      firstGP: undefined,
-      corners: undefined
-    } as WikiData)
-  ])
-
-  if (layout.length === 0) {
-    console.warn(`No layout data found for circuit ${circuitId}`)
-    return null
+  const wikiTitle = WIKIPEDIA_MAPPING[circuitId]
+  if (!wikiTitle) {
+    return {
+      ...circuitBase,
+      facts: ['Information not available'],
+      length: 'N/A',
+      corners: 0
+    }
   }
+
+  const wikiData = await fetchWikipediaData(wikiTitle, onProgress)
 
   return {
-    id: circuitId,
-    name: mapping.name,
-    location: mapping.location,
-    country: mapping.country,
-    layout,
+    ...circuitBase,
     facts: wikiData.facts,
     length: wikiData.length || 'N/A',
     lapRecord: wikiData.lapRecord,
     firstGP: wikiData.firstGP,
-    corners: wikiData.corners || 0,
+    corners: wikiData.corners || 0
   }
-}
-
-export async function loadAllCircuits(): Promise<Circuit[]> {
-  const circuitPromises = CIRCUIT_MAPPING.map(mapping => loadCircuit(mapping.id))
-  const circuits = await Promise.all(circuitPromises)
-  return circuits.filter((c): c is Circuit => c !== null)
 }
