@@ -20,18 +20,18 @@ A web application that challenges users to draw shapes that match Formula 1 circ
 - **Success criteria**: Smooth drawing on mobile and desktop with no lag, clear visual feedback of the drawn path, semi-transparent overlay of matched circuit for comparison
 
 ### Shape Matching Engine
-- **Functionality**: Compares user's drawn shape against database of F1 circuit layouts using configurable similarity algorithms with official circuit data
-- **Purpose**: Core game mechanic that determines which circuit best matches the user's drawing
+- **Functionality**: Compares user's drawn shape against real F1 circuit layouts from the bacinger/f1-circuits GitHub repository using configurable similarity algorithms
+- **Purpose**: Core game mechanic that determines which circuit best matches the user's drawing using authentic track data
 - **Trigger**: User completes a closed shape on canvas
-- **Progression**: Shape completed → normalize both shapes → apply selected algorithm (Hausdorff distance, Frechet distance, or turning angle) → rank circuits by similarity → display top match with percentage → show circuit overlay
-- **Success criteria**: Returns results within 500ms, shows match percentage, displays top match with overlay visualization
+- **Progression**: Shape completed → load circuits from GitHub repo → normalize both shapes → apply selected algorithm (Hausdorff distance, Frechet distance, or turning angle) → rank circuits by similarity → display top match with percentage → show circuit overlay
+- **Success criteria**: Returns results within 500ms, shows match percentage, displays top match with overlay visualization, uses real circuit coordinates from official source
 
 ### Circuit Information Display
-- **Functionality**: Shows detailed information and fun facts about matched circuits sourced from official F1 data
-- **Purpose**: Educational component that rewards users with interesting F1 knowledge
+- **Functionality**: Shows detailed information and facts about matched circuits with data dynamically fetched from Wikipedia
+- **Purpose**: Educational component that rewards users with current and accurate F1 knowledge
 - **Trigger**: Matching algorithm completes
-- **Progression**: Match found → display circuit name, location, and layout → show fun facts (lap record, notable wins, unique characteristics) → display number of corners and circuit length
-- **Success criteria**: Each circuit has 3-5 interesting facts from official sources, information is easily readable, accurate lap records and circuit statistics
+- **Progression**: Match found → fetch Wikipedia summary via API → display circuit name, location, and layout → show live facts from Wikipedia → display circuit statistics
+- **Success criteria**: Each circuit displays Wikipedia-sourced information, graceful fallback if Wikipedia unavailable, information is easily readable with accurate data
 
 ### Dark Mode Toggle
 - **Functionality**: Switches between light and dark themes with persistent preference
@@ -62,6 +62,9 @@ A web application that challenges users to draw shapes that match Formula 1 circ
 - **No match found**: Show "No close match" message with encouragement to try again
 - **Touch palm rejection**: Prevent accidental touches from registering as drawing input
 - **Rapid redrawing**: Debounce matching algorithm to prevent performance issues
+- **Data loading**: Show loading state while fetching circuit data from GitHub and Wikipedia
+- **API failures**: Graceful fallback to cached data or informative error messages if external APIs fail
+- **Network errors**: Handle GitHub repository and Wikipedia API timeouts with user-friendly messages
 
 ## Design Direction
 

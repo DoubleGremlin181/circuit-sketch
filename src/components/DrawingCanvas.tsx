@@ -11,6 +11,24 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [points, setPoints] = useState<Point[]>([])
+  const [theme, setTheme] = useState<string>('light')
+
+  useEffect(() => {
+    const checkTheme = () => {
+      const isDark = document.documentElement.classList.contains('dark')
+      setTheme(isDark ? 'dark' : 'light')
+    }
+    
+    checkTheme()
+    
+    const observer = new MutationObserver(checkTheme)
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    })
+    
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -27,8 +45,8 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
     ctx.clearRect(0, 0, rect.width, rect.height)
 
     const rootStyles = getComputedStyle(document.documentElement)
-    const primaryColor = rootStyles.getPropertyValue('--primary').trim()
-    const accentColor = rootStyles.getPropertyValue('--accent').trim()
+    const primaryColor = `oklch(${rootStyles.getPropertyValue('--primary').trim()})`
+    const accentColor = `oklch(${rootStyles.getPropertyValue('--accent').trim()})`
 
     if (overlayCircuit && overlayCircuit.length > 0 && points.length > 0) {
       const alignedCircuit = alignCircuitToDrawing(overlayCircuit, points)
@@ -38,7 +56,7 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
     if (points.length > 0) {
       drawPath(ctx, points, rect.width, rect.height, primaryColor, 3)
     }
-  }, [points, overlayCircuit])
+  }, [points, overlayCircuit, theme])
 
   const drawPath = (
     ctx: CanvasRenderingContext2D,
