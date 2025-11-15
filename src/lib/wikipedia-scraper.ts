@@ -47,8 +47,7 @@ async function fetchWikipediaInfobox(pageTitle: string): Promise<Record<string, 
     format: 'json',
     page: pageTitle,
     prop: 'text',
-    origin: '*',
-    section: '0'
+    origin: '*'
   })
 
   try {
@@ -62,7 +61,7 @@ async function fetchWikipediaInfobox(pageTitle: string): Promise<Record<string, 
     const doc = parser.parseFromString(html, 'text/html')
     
     const infobox: Record<string, string> = {}
-    const infoboxTables = doc.querySelectorAll('table.infobox, table.vevent, table[class*="infobox"]')
+    const infoboxTables = doc.querySelectorAll('table.infobox')
     
     infoboxTables.forEach(table => {
       const rows = table.querySelectorAll('tr')
@@ -73,8 +72,8 @@ async function fetchWikipediaInfobox(pageTitle: string): Promise<Record<string, 
         
         if (header && dataCell) {
           const key = header.textContent?.trim().toLowerCase().replace(/\s+/g, ' ') || ''
-          let value = dataCell.textContent?.trim().replace(/\s+/g, ' ').replace(/\[\d+\]/g, '') || ''
-          value = value.replace(/\n/g, ' ').trim()
+          let value = dataCell.textContent?.trim() || ''
+          value = value.replace(/\[\d+\]/g, '').replace(/\s+/g, ' ').trim()
           
           if (key && value) {
             infobox[key] = value
@@ -95,16 +94,17 @@ function extractCircuitLength(infobox: Record<string, string>): string | undefin
   for (const key of lengthKeys) {
     if (infobox[key]) {
       const text = infobox[key]
-      const match = text.match(/(\d+\.?\d*)\s*(km|kilometers?|mi|miles?|metres?|m\b)/i)
-      if (match) {
-        const value = parseFloat(match[1])
-        const unit = match[2].toLowerCase()
-        if (unit.startsWith('mi')) {
-          return `${(value * 1.60934).toFixed(3)} km`
-        } else if (unit.startsWith('m') && !unit.startsWith('mi')) {
-          return `${(value / 1000).toFixed(3)} km`
-        }
-        return `${value.toFixed(3)} km`
+      const kmMatch = text.match(/(\d+\.?\d*)\s*km/i)
+      if (kmMatch) {
+        return `${parseFloat(kmMatch[1]).toFixed(3)} km`
+      }
+      const miMatch = text.match(/(\d+\.?\d*)\s*mi/i)
+      if (miMatch) {
+        return `${(parseFloat(miMatch[1]) * 1.60934).toFixed(3)} km`
+      }
+      const mMatch = text.match(/(\d+\.?\d*)\s*m(?:eters?|etres?)?\b/i)
+      if (mMatch) {
+        return `${(parseFloat(mMatch[1]) / 1000).toFixed(3)} km`
       }
     }
   }
@@ -165,22 +165,62 @@ function extractLapRecord(infobox: Record<string, string>): string | undefined {
 
 function extractFacts(content: string, circuitName: string): string[] {
   const facts: string[] = []
-  const sentences = content.split(/\.\s+/)
+  
+  const sections = content.split(/\n==\s*/)
+  
+  let historyText = ''
+  let characteristicsText = ''
+  
+  for (const section of sections) {
+    const lowerSection = section.toLowerCase()
+    if (lowerSection.includes('history') || lowerSection.includes('background')) {
+      historyText += section
+    }
+    if (lowerSection.includes('layout') || lowerSection.includes('characteristic') || lowerSection.includes('track')) {
+      characteristicsText += section
+    }
+  }
+  
+  const combinedText = historyText + ' ' + characteristicsText + ' ' + content
+  const sentences = combinedText.split(/\.\s+/)
   
   const keywords = [
-    'first', 'longest', 'fastest', 'historic', 'designed', 'feature', 
-    'famous', 'known for', 'unique', 'challenging', 'hosted', 'elevation',
-    'altitude', 'street circuit', 'night race', 'banked', 'chicane'
+    'designed', 'built', 'opened', 'first',
+    'fast', 'fastest', 'speed',
+    'elevation', 'altitude', 'climb',
+    'challenging', 'difficult', 'technical',
+    'street', 'purpose-built', 'temporary',
+    'iconic', 'famous', 'known for', 'notable',
+    'features', 'includes', 'consists',
+    'longest', 'shortest', 'unique',
+    'chicane', 'hairpin', 'corner', 'straight',
+    'banked', 'gradient', 'uphill', 'downhill',
+    'historic', 'tradition', 'classic',
+    'record', 'lap time'
   ]
   
+  const seenFacts = new Set<string>()
+  
   for (const sentence of sentences) {
-    if (sentence.length < 30 || sentence.length > 200) continue
-    if (!sentence.toLowerCase().includes(circuitName.split(' ')[0].toLowerCase())) {
-      const hasKeyword = keywords.some(kw => sentence.toLowerCase().includes(kw))
-      if (hasKeyword) {
-        facts.push(sentence.trim() + '.')
+    const trimmed = sentence.trim()
+    
+    if (trimmed.length < 40 || trimmed.length > 250) continue
+    if (trimmed.includes('Retrieved') || trimmed.includes('Citation')) continue
+    if (trimmed.includes('==') || trimmed.includes('ISBN')) continue
+    if (/\d{4}-\d{2}-\d{2}/.test(trimmed)) continue
+    
+    const normalized = trimmed.toLowerCase()
+    const hasKeyword = keywords.some(kw => normalized.includes(kw))
+    
+    if (hasKeyword && !seenFacts.has(normalized)) {
+      const cleanFact = trimmed.replace(/\[\d+\]/g, '').trim()
+      if (cleanFact.length >= 40) {
+        facts.push(cleanFact + (cleanFact.endsWith('.') ? '' : '.'))
+        seenFacts.add(normalized)
       }
     }
+    
+    if (facts.length >= 10) break
   }
   
   return facts.slice(0, 8)
@@ -195,65 +235,79 @@ function extractRaceStatistics(content: string, infobox: Record<string, string>)
   const stats: any = {}
   
   for (const [key, value] of Object.entries(infobox)) {
-    if (key.includes('races') || key.includes('grands prix held')) {
+    if (key.includes('races') || key.includes('grands prix') || key === 'number of races') {
       const match = value.match(/(\d+)/)
       if (match) {
         stats.totalRaces = parseInt(match[1], 10)
       }
     }
     
-    if (key.includes('years') || key.includes('first race') || key.includes('races held')) {
-      const yearMatch = value.match(/(\d{4})\s*[-–]\s*(\d{4}|present)/i) || 
-                       value.match(/since\s+(\d{4})/i) ||
-                       value.match(/(\d{4})\s*[-–]\s*(\d{4})/i)
+    if (key.includes('first grand prix') || key === 'first race') {
+      const yearMatch = value.match(/(\d{4})/)
       if (yearMatch) {
-        const startYear = yearMatch[1]
-        const endYear = yearMatch[2] === 'present' ? new Date().getFullYear().toString() : yearMatch[2] || new Date().getFullYear().toString()
-        stats.yearRange = `${startYear}-${endYear}`
+        const currentYear = new Date().getFullYear()
+        stats.yearRange = `${yearMatch[1]}-${currentYear}`
       }
     }
   }
   
-  if (!stats.totalRaces) {
-    const raceCountMatch = content.match(/held\s+(\d+)\s+(?:times|races|Formula One|F1)/i) ||
-                          content.match(/(\d+)\s+(?:times|races|Formula One races|F1 races|grands? prix)\s+(?:have been )?held/i) ||
-                          content.match(/hosted\s+(?:the\s+)?Formula One.*?(\d+)\s+times/i)
-    if (raceCountMatch) {
-      stats.totalRaces = parseInt(raceCountMatch[1], 10)
+  const raceCountPatterns = [
+    /hosted\s+(\d+)\s+(?:Formula One|F1|Formula 1)\s+(?:Grands? Prix|races?)/i,
+    /(\d+)\s+(?:Formula One|F1|Formula 1)\s+(?:Grands? Prix|races?)\s+(?:have been )?held/i,
+    /held.*?(\d+)\s+times/i
+  ]
+  
+  for (const pattern of raceCountPatterns) {
+    const match = content.match(pattern)
+    if (match && !stats.totalRaces) {
+      const count = parseInt(match[1], 10)
+      if (count > 0 && count < 200) {
+        stats.totalRaces = count
+        break
+      }
     }
   }
   
-  if (!stats.yearRange) {
-    const yearRangeMatch = content.match(/held.*?(?:from|between)\s+(\d{4})\s+(?:and|to|-|–)\s+(\d{4}|present)/i) ||
-                          content.match(/(\d{4})\s+(?:to|-|–)\s+(\d{4}|present).*?(?:Formula One|Grand Prix)/i) ||
-                          content.match(/since\s+(\d{4})/i)
-    if (yearRangeMatch) {
-      if (yearRangeMatch[2]) {
-        const endYear = yearRangeMatch[2] === 'present' ? new Date().getFullYear() : parseInt(yearRangeMatch[2], 10)
-        stats.yearRange = `${yearRangeMatch[1]}-${endYear}`
-      } else {
-        stats.yearRange = `${yearRangeMatch[1]}-${new Date().getFullYear()}`
-      }
+  const yearRangePatterns = [
+    /(?:from|between)\s+(\d{4})\s+(?:to|and|–|-)\s+(\d{4}|present)/i,
+    /since\s+(\d{4})/i,
+    /(\d{4})\s+(?:–|-)\s+(?:present|ongoing|\d{4})/i
+  ]
+  
+  for (const pattern of yearRangePatterns) {
+    const match = content.match(pattern)
+    if (match && !stats.yearRange) {
+      const startYear = match[1]
+      const endYear = match[2] && match[2] !== 'present' 
+        ? match[2] 
+        : new Date().getFullYear().toString()
+      stats.yearRange = `${startYear}-${endYear}`
+      break
     }
   }
   
   const driverWinsPatterns = [
-    /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+).*?(?:won|victories|wins).*?(\d+)\s+(?:times|races)/i,
-    /(\d+)\s+(?:wins|victories).*?(?:by|for)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i,
-    /most.*?(?:wins|successful).*?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+).*?(\d+)/i
+    /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+).*?won\s+(?:the\s+)?(?:race\s+)?(\d+)\s+times?/i,
+    /most\s+(?:wins|successful).*?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+).*?\((\d+)/i,
+    /record.*?(\d+)\s+(?:wins|victories).*?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i
   ]
   
   for (const pattern of driverWinsPatterns) {
     const match = content.match(pattern)
     if (match) {
-      if (pattern.source.startsWith('(\\d+)')) {
+      if (pattern.source.includes('record')) {
         stats.mostWinsCount = parseInt(match[1], 10)
         stats.mostWinsDriver = match[2]
+      } else if (pattern.source.includes('most')) {
+        stats.mostWinsDriver = match[1]
+        stats.mostWinsCount = parseInt(match[2], 10)
       } else {
         stats.mostWinsDriver = match[1]
         stats.mostWinsCount = parseInt(match[2], 10)
       }
-      break
+      if (stats.mostWinsCount > 0 && stats.mostWinsCount < 50) {
+        break
+      }
     }
   }
   
@@ -267,7 +321,10 @@ export async function scrapeWikipediaData(circuitId: string): Promise<WikipediaD
   
   if (!wikipediaTitle) {
     console.warn(`No Wikipedia mapping found for circuit: ${circuitId}`)
-    return { facts: [] }
+    return { 
+      facts: ['Historic Formula 1 racing circuit with rich heritage'],
+      corners: undefined
+    }
   }
 
   console.log(`Scraping Wikipedia data for ${circuitId} from ${wikipediaTitle}`)
@@ -278,7 +335,10 @@ export async function scrapeWikipediaData(circuitId: string): Promise<WikipediaD
       fetchWikipediaInfobox(wikipediaTitle)
     ])
 
-    console.log(`Infobox data for ${circuitId}:`, Object.keys(infobox))
+    console.log(`Fetched ${Object.keys(infobox).length} infobox fields for ${circuitId}`)
+    if (Object.keys(infobox).length > 0) {
+      console.log(`Sample infobox keys:`, Object.keys(infobox).slice(0, 10))
+    }
 
     const circuitName = wikipediaTitle.replace(/_/g, ' ')
     const facts = extractFacts(content, circuitName)
@@ -288,8 +348,12 @@ export async function scrapeWikipediaData(circuitId: string): Promise<WikipediaD
     const lapRecord = extractLapRecord(infobox)
     const raceStats = extractRaceStatistics(content, infobox)
 
-    return {
-      facts: facts.length > 0 ? facts : ['Historic Formula 1 racing circuit'],
+    const result = {
+      facts: facts.length > 0 ? facts : [
+        'One of Formula 1\'s iconic racing circuits',
+        'Features a challenging layout with technical sections',
+        'Has hosted many memorable races over the years'
+      ],
       length,
       corners,
       firstGP,
@@ -301,9 +365,22 @@ export async function scrapeWikipediaData(circuitId: string): Promise<WikipediaD
         wins: raceStats.mostWinsCount
       } : undefined
     }
+
+    console.log(`Extracted data for ${circuitId}:`, {
+      factsCount: result.facts.length,
+      hasLength: !!result.length,
+      hasCorners: !!result.corners,
+      hasFirstGP: !!result.firstGP,
+      hasStats: !!result.totalRaces
+    })
+
+    return result
   } catch (error) {
     console.error(`Error scraping Wikipedia for ${circuitId}:`, error)
-    return { facts: [] }
+    return { 
+      facts: ['Formula 1 racing circuit'],
+      corners: undefined
+    }
   }
 }
 
