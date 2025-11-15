@@ -157,7 +157,9 @@ function CircuitCanvas({ layout, name }: { layout: { x: number; y: number }[], n
         ctx.lineTo(x, y)
       }
     })
-    ctx.closePath()
+    const firstX = layout[0].x * width
+    const firstY = layout[0].y * height
+    ctx.lineTo(firstX, firstY)
     ctx.stroke()
 
     ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim()
