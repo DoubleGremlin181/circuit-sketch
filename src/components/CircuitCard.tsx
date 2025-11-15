@@ -84,7 +84,7 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.1 * index, duration: 0.2 }}
-                        className="text-sm leading-relaxed pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[0.6em] before:w-1.5 before:h-1.5 before:bg-primary before:rounded-full"
+                        className="text-sm leading-relaxed pl-4 relative text-card-foreground before:content-[''] before:absolute before:left-0 before:top-[0.6em] before:w-1.5 before:h-1.5 before:bg-primary before:rounded-full"
                       >
                         {fact}
                       </motion.li>
