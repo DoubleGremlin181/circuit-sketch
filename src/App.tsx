@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { useState } from 'react'
+import { useLocalStorage } from '@/hooks/use-local-storage'
 import { DrawingCanvas } from '@/components/DrawingCanvas'
 import { CircuitCard } from '@/components/CircuitCard'
 import { SettingsSheet } from '@/components/SettingsSheet'
@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Toaster } from 'sonner'
 import { X, Flag, Pencil } from '@phosphor-icons/react'
-import { Circuit } from '@/lib/circuits'
-import { loadAllCircuits } from '@/lib/circuit-loader'
+import { circuits, Circuit } from '@/lib/circuits'
 import { matchShape, MatchAlgorithm, Point } from '@/lib/matching'
 
 interface MatchedCircuit {
@@ -18,47 +17,14 @@ interface MatchedCircuit {
 }
 
 function App() {
-  const [algorithm, setAlgorithm] = useKV<MatchAlgorithm>('match-algorithm', 'hausdorff')
+  const [algorithm, setAlgorithm] = useLocalStorage<MatchAlgorithm>('match-algorithm', 'hausdorff')
   const [matchedCircuit, setMatchedCircuit] = useState<MatchedCircuit | null>(null)
   const [key, setKey] = useState(0)
   const [selectedCircuitId, setSelectedCircuitId] = useState<string>('')
   const [hasDrawn, setHasDrawn] = useState(false)
-  const [circuits, setCircuits] = useState<Circuit[]>([])
-  const [isLoading, setIsLoading] = useState(true)
 
   const currentAlgorithm = algorithm || 'hausdorff'
 
-  useEffect(() => {
-    console.log('Loading cached circuit data...')
-    loadAllCircuits()
-      .then(loadedCircuits => {
-        console.log(`✓ Loaded ${loadedCircuits.length} circuits from local cache`)
-        
-        loadedCircuits.forEach(circuit => {
-          console.log(`Circuit: ${circuit.id}`, {
-            name: circuit.name,
-            location: circuit.location,
-            factsCount: circuit.facts?.length || 0,
-            hasLength: !!circuit.length && circuit.length !== 'Unknown',
-            hasCorners: !!circuit.corners && circuit.corners > 0,
-            hasFirstGP: !!circuit.firstGP,
-            hasTotalRaces: !!circuit.totalRaces,
-            hasYearRange: !!circuit.yearRange,
-            hasMostWins: !!circuit.mostWins
-          })
-        })
-        
-        setCircuits(loadedCircuits)
-        setIsLoading(false)
-      })
-      .catch(error => {
-        console.error('✗ Failed to load circuits:', error)
-        console.error('Error message:', error.message)
-        console.error('Error stack:', error.stack)
-        setCircuits([])
-        setIsLoading(false)
-      })
-  }, [])
 
   const handleDrawingStart = () => {
     if (selectedCircuitId) {
@@ -153,32 +119,14 @@ function App() {
           </div>
         </header>
 
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center space-y-4">
-              <Flag size={64} weight="duotone" className="mx-auto text-primary animate-pulse" />
-              <p className="text-lg text-muted-foreground">Loading F1 circuits...</p>
-            </div>
-          </div>
-        ) : circuits.length === 0 ? (
+        {circuits.length === 0 ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center space-y-4 max-w-md">
               <Flag size={64} weight="duotone" className="mx-auto text-muted-foreground" />
-              <p className="text-lg text-muted-foreground font-medium">Failed to load circuits</p>
+              <p className="text-lg text-muted-foreground font-medium">No circuits available</p>
               <p className="text-sm text-muted-foreground">
-                Unable to load the local F1 circuit data bundle. This could be due to:
+                Circuit data files are missing. Run the data scripts to populate circuit information.
               </p>
-              <ul className="text-xs text-muted-foreground text-left list-disc pl-6 space-y-1">
-                <li>Data files missing (run the data download scripts)</li>
-                <li>Corrupted JSON in <code>src/data/circuits.json</code></li>
-                <li>Build cache needing a reload</li>
-              </ul>
-              <div className="pt-2">
-                <Button onClick={() => window.location.reload()} variant="outline" className="gap-2">
-                  <X size={16} />
-                  Retry
-                </Button>
-              </div>
             </div>
           </div>
         ) : (
