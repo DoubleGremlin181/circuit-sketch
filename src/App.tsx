@@ -31,11 +31,14 @@ function App() {
   useEffect(() => {
     loadAllCircuits()
       .then(loadedCircuits => {
+        console.log(`Loaded ${loadedCircuits.length} circuits successfully`)
         setCircuits(loadedCircuits)
         setIsLoading(false)
       })
       .catch(error => {
         console.error('Failed to load circuits:', error)
+        console.error('Error message:', error.message)
+        console.error('Error stack:', error.stack)
         setCircuits([])
         setIsLoading(false)
       })
@@ -135,12 +138,23 @@ function App() {
           </div>
         ) : circuits.length === 0 ? (
           <div className="flex items-center justify-center py-20">
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-4 max-w-md">
               <Flag size={64} weight="duotone" className="mx-auto text-muted-foreground" />
-              <p className="text-lg text-muted-foreground">Failed to load circuits</p>
-              <Button onClick={() => window.location.reload()} variant="outline">
-                Retry
-              </Button>
+              <p className="text-lg text-muted-foreground font-medium">Failed to load circuits</p>
+              <p className="text-sm text-muted-foreground">
+                Unable to load F1 circuit data from GitHub. This could be due to:
+              </p>
+              <ul className="text-xs text-muted-foreground text-left list-disc pl-6 space-y-1">
+                <li>Network connectivity issues</li>
+                <li>GitHub repository structure changes</li>
+                <li>CORS restrictions</li>
+              </ul>
+              <div className="pt-2">
+                <Button onClick={() => window.location.reload()} variant="outline" className="gap-2">
+                  <X size={16} />
+                  Retry
+                </Button>
+              </div>
             </div>
           </div>
         ) : (

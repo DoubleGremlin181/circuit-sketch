@@ -58,7 +58,7 @@ function extractCoordinates(geometry: GeoJSONCoordinate): number[][] {
 
 export async function fetchCircuitGeoJSON(circuitId: string): Promise<Point[]> {
   try {
-    const url = `https://raw.githubusercontent.com/bacinger/f1-circuits/master/circuits/${circuitId}.geojson`
+    const url = `https://raw.githubusercontent.com/bacinger/f1-circuits/main/circuits/${circuitId}.geojson`
     const response = await fetch(url)
     
     if (!response.ok) {

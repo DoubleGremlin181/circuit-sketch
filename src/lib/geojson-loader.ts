@@ -31,7 +31,8 @@ interface CircuitMetadata {
   corners?: number
 }
 
-const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/bacinger/f1-circuits/master/circuits'
+const GITHUB_API_BASE = 'https://api.github.com/repos/bacinger/f1-circuits/contents/circuits'
+const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/bacinger/f1-circuits/main/circuits'
 
 const circuitMetadata: Record<string, CircuitMetadata> = {
   'albert-park': {
@@ -495,33 +496,93 @@ function parseGeoJSON(geojson: GeoJSONCollection, circuitId: string): Circuit | 
 }
 
 export async function loadCircuitFromGitHub(circuitId: string): Promise<Circuit | null> {
+  const branches = ['main', 'master']
+  
+  for (const branch of branches) {
+    try {
+      const url = `https://raw.githubusercontent.com/bacinger/f1-circuits/${branch}/circuits/${circuitId}.geojson`
+      console.log(`Attempting to load circuit from: ${url}`)
+      const response = await fetch(url)
+      
+      if (!response.ok) {
+        console.warn(`Failed to load circuit ${circuitId} from ${branch}: ${response.status} ${response.statusText}`)
+        continue
+      }
+
+      const geojson = await response.json() as GeoJSONCollection
+      const circuit = parseGeoJSON(geojson, circuitId)
+      if (circuit) {
+        console.log(`Successfully loaded circuit: ${circuitId} from branch ${branch}`)
+        return circuit
+      }
+    } catch (error) {
+      console.error(`Error loading circuit ${circuitId} from ${branch}:`, error)
+    }
+  }
+  
+  console.error(`Failed to load circuit ${circuitId} from all branches`)
+  return null
+}
+
+async function discoverAvailableCircuits(): Promise<string[]> {
   try {
-    const url = `${GITHUB_RAW_BASE}/${circuitId}.geojson`
-    const response = await fetch(url)
+    console.log('Discovering available circuits from GitHub...')
+    const response = await fetch(GITHUB_API_BASE)
     
     if (!response.ok) {
-      console.warn(`Failed to load circuit ${circuitId}: ${response.status}`)
-      return null
+      console.warn('Failed to discover circuits from GitHub API')
+      return []
     }
-
-    const geojson = await response.json() as GeoJSONCollection
-    return parseGeoJSON(geojson, circuitId)
+    
+    const files = await response.json() as Array<{ name: string; type: string }>
+    const geojsonFiles = files
+      .filter(file => file.type === 'file' && file.name.endsWith('.geojson'))
+      .map(file => file.name.replace('.geojson', ''))
+    
+    console.log(`Discovered ${geojsonFiles.length} circuits:`, geojsonFiles)
+    return geojsonFiles
   } catch (error) {
-    console.error(`Error loading circuit ${circuitId}:`, error)
-    return null
+    console.error('Error discovering circuits:', error)
+    return []
   }
 }
 
 export async function loadAllCircuitsFromGitHub(): Promise<Circuit[]> {
-  const circuitIds = Object.keys(circuitMetadata)
+  console.log('Starting circuit loading process...')
+  
+  const availableCircuits = await discoverAvailableCircuits()
+  
+  let circuitIdsToLoad: string[]
+  
+  if (availableCircuits.length > 0) {
+    console.log(`Using discovered circuits from GitHub: ${availableCircuits.length} found`)
+    circuitIdsToLoad = availableCircuits
+  } else {
+    console.log('Circuit discovery failed, using predefined list')
+    circuitIdsToLoad = Object.keys(circuitMetadata)
+  }
+  
+  console.log(`Attempting to load ${circuitIdsToLoad.length} circuits...`)
   
   const results = await Promise.allSettled(
-    circuitIds.map(id => loadCircuitFromGitHub(id))
+    circuitIdsToLoad.map(id => loadCircuitFromGitHub(id))
   )
 
-  return results
+  const loadedCircuits = results
     .filter((result): result is PromiseFulfilledResult<Circuit | null> => 
       result.status === 'fulfilled' && result.value !== null
     )
     .map(result => result.value as Circuit)
+  
+  console.log(`Successfully loaded ${loadedCircuits.length} circuits from GitHub`)
+  
+  if (loadedCircuits.length === 0) {
+    console.error('Failed to load any circuits. Possible reasons:')
+    console.error('- GitHub repo structure has changed')
+    console.error('- Network/CORS issues')
+    console.error('- Branch name is incorrect')
+    throw new Error('No circuits could be loaded from GitHub')
+  }
+  
+  return loadedCircuits
 }
