@@ -29,14 +29,30 @@ function App() {
   const currentAlgorithm = algorithm || 'hausdorff'
 
   useEffect(() => {
+    console.log('Starting circuit loading process...')
     loadAllCircuits()
       .then(loadedCircuits => {
-        console.log(`Loaded ${loadedCircuits.length} circuits successfully`)
+        console.log(`✓ Loaded ${loadedCircuits.length} circuits successfully`)
+        
+        loadedCircuits.forEach(circuit => {
+          console.log(`Circuit: ${circuit.id}`, {
+            name: circuit.name,
+            location: circuit.location,
+            factsCount: circuit.facts?.length || 0,
+            hasLength: !!circuit.length && circuit.length !== 'Unknown',
+            hasCorners: !!circuit.corners && circuit.corners > 0,
+            hasFirstGP: !!circuit.firstGP,
+            hasTotalRaces: !!circuit.totalRaces,
+            hasYearRange: !!circuit.yearRange,
+            hasMostWins: !!circuit.mostWins
+          })
+        })
+        
         setCircuits(loadedCircuits)
         setIsLoading(false)
       })
       .catch(error => {
-        console.error('Failed to load circuits:', error)
+        console.error('✗ Failed to load circuits:', error)
         console.error('Error message:', error.message)
         console.error('Error stack:', error.stack)
         setCircuits([])

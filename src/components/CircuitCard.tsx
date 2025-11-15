@@ -13,6 +13,10 @@ interface CircuitCardProps {
 
 export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
   const showMatchBadge = matchPercentage < 100
+  
+  const hasFacts = circuit.facts && circuit.facts.length > 0
+  const hasStats = circuit.totalRaces || circuit.yearRange || circuit.mostWins
+  const hasBasicInfo = circuit.firstGP || circuit.length || (circuit.corners && circuit.corners > 0) || circuit.lapRecord
 
   return (
     <motion.div
@@ -25,11 +29,11 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <CardTitle className="text-2xl font-semibold leading-tight mb-2">
-                {circuit.name}
+                {circuit.name || 'Unknown Circuit'}
               </CardTitle>
               <CardDescription className="flex items-center gap-1.5 text-base">
                 <MapPin size={16} weight="fill" className="text-muted-foreground" />
-                {circuit.location}
+                {circuit.location || 'Unknown Location'}
               </CardDescription>
             </div>
             {showMatchBadge && (
@@ -44,31 +48,33 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
         </CardHeader>
         
         <CardContent className="space-y-4">
-          <div className="flex flex-wrap gap-2">
-            {circuit.firstGP && (
-              <Badge variant="outline" className="gap-1.5">
-                <Flag size={14} weight="fill" />
-                First GP: {circuit.firstGP}
-              </Badge>
-            )}
-            {circuit.length && (
-              <Badge variant="outline">
-                Length: {circuit.length}
-              </Badge>
-            )}
-            {circuit.corners > 0 && (
-              <Badge variant="outline">
-                Corners: {circuit.corners}
-              </Badge>
-            )}
-            {circuit.lapRecord && (
-              <Badge variant="outline" className="hidden sm:inline-flex">
-                Record: {circuit.lapRecord}
-              </Badge>
-            )}
-          </div>
+          {hasBasicInfo && (
+            <div className="flex flex-wrap gap-2">
+              {circuit.firstGP && (
+                <Badge variant="outline" className="gap-1.5">
+                  <Flag size={14} weight="fill" />
+                  First GP: {circuit.firstGP}
+                </Badge>
+              )}
+              {circuit.length && circuit.length !== 'Unknown' && (
+                <Badge variant="outline">
+                  Length: {circuit.length}
+                </Badge>
+              )}
+              {circuit.corners && circuit.corners > 0 && (
+                <Badge variant="outline">
+                  Corners: {circuit.corners}
+                </Badge>
+              )}
+              {circuit.lapRecord && (
+                <Badge variant="outline" className="hidden sm:inline-flex">
+                  Record: {circuit.lapRecord}
+                </Badge>
+              )}
+            </div>
+          )}
 
-          {(circuit.totalRaces || circuit.yearRange || circuit.mostWins) && (
+          {hasStats && (
             <>
               <Separator />
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -94,7 +100,7 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
                     </div>
                   </div>
                 )}
-                {circuit.mostWins && (
+                {circuit.mostWins && circuit.mostWins.driver && circuit.mostWins.wins > 0 && (
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium uppercase tracking-wide">
                       <Trophy size={14} weight="duotone" />
@@ -112,7 +118,7 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
             </>
           )}
 
-          {circuit.facts && circuit.facts.length > 0 && (
+          {hasFacts && (
             <>
               <Separator />
 
@@ -137,6 +143,12 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
                 </ScrollArea>
               </div>
             </>
+          )}
+
+          {!hasBasicInfo && !hasStats && !hasFacts && (
+            <div className="text-center py-8 text-muted-foreground">
+              <p className="text-sm">Loading circuit information...</p>
+            </div>
           )}
         </CardContent>
       </Card>

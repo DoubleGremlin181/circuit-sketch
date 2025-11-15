@@ -15,6 +15,21 @@ interface WikipediaData {
 }
 
 const WIKIPEDIA_API = 'https://en.wikipedia.org/w/api.php'
+const FETCH_TIMEOUT = 10000
+
+async function fetchWithTimeout(url: string, timeout: number = FETCH_TIMEOUT): Promise<Response> {
+  const controller = new AbortController()
+  const id = setTimeout(() => controller.abort(), timeout)
+  
+  try {
+    const response = await fetch(url, { signal: controller.signal })
+    clearTimeout(id)
+    return response
+  } catch (error) {
+    clearTimeout(id)
+    throw error
+  }
+}
 
 async function fetchWikipediaContent(pageTitle: string): Promise<string> {
   const params = new URLSearchParams({
@@ -27,16 +42,35 @@ async function fetchWikipediaContent(pageTitle: string): Promise<string> {
   })
 
   try {
-    const response = await fetch(`${WIKIPEDIA_API}?${params}`)
+    const response = await fetchWithTimeout(`${WIKIPEDIA_API}?${params}`)
+    
+    if (!response.ok) {
+      console.error(`Wikipedia API error for ${pageTitle}: ${response.status} ${response.statusText}`)
+      return ''
+    }
+    
     const data = await response.json()
     
     const pages = data.query?.pages
-    if (!pages) return ''
+    if (!pages) {
+      console.warn(`No pages found for ${pageTitle}`)
+      return ''
+    }
     
     const pageId = Object.keys(pages)[0]
-    return pages[pageId]?.extract || ''
+    const extract = pages[pageId]?.extract || ''
+    
+    if (!extract) {
+      console.warn(`No extract found for ${pageTitle}`)
+    }
+    
+    return extract
   } catch (error) {
-    console.error(`Failed to fetch Wikipedia content for ${pageTitle}:`, error)
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error(`Timeout fetching Wikipedia content for ${pageTitle}`)
+    } else {
+      console.error(`Failed to fetch Wikipedia content for ${pageTitle}:`, error)
+    }
     return ''
   }
 }
@@ -51,10 +85,19 @@ async function fetchWikipediaInfobox(pageTitle: string): Promise<Record<string, 
   })
 
   try {
-    const response = await fetch(`${WIKIPEDIA_API}?${params}`)
+    const response = await fetchWithTimeout(`${WIKIPEDIA_API}?${params}`)
+    
+    if (!response.ok) {
+      console.error(`Wikipedia API error for ${pageTitle} infobox: ${response.status} ${response.statusText}`)
+      return {}
+    }
+    
     const data = await response.json()
     
-    if (!data.parse?.text?.['*']) return {}
+    if (!data.parse?.text?.['*']) {
+      console.warn(`No parse data found for ${pageTitle}`)
+      return {}
+    }
     
     const html = data.parse.text['*']
     const parser = new DOMParser()
@@ -62,6 +105,10 @@ async function fetchWikipediaInfobox(pageTitle: string): Promise<Record<string, 
     
     const infobox: Record<string, string> = {}
     const infoboxTables = doc.querySelectorAll('table.infobox')
+    
+    if (infoboxTables.length === 0) {
+      console.warn(`No infobox found for ${pageTitle}`)
+    }
     
     infoboxTables.forEach(table => {
       const rows = table.querySelectorAll('tr')
@@ -84,7 +131,11 @@ async function fetchWikipediaInfobox(pageTitle: string): Promise<Record<string, 
     
     return infobox
   } catch (error) {
-    console.error(`Failed to fetch Wikipedia infobox for ${pageTitle}:`, error)
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error(`Timeout fetching Wikipedia infobox for ${pageTitle}`)
+    } else {
+      console.error(`Failed to fetch Wikipedia infobox for ${pageTitle}:`, error)
+    }
     return {}
   }
 }
@@ -322,7 +373,7 @@ export async function scrapeWikipediaData(circuitId: string): Promise<WikipediaD
   if (!wikipediaTitle) {
     console.warn(`No Wikipedia mapping found for circuit: ${circuitId}`)
     return { 
-      facts: ['Historic Formula 1 racing circuit with rich heritage'],
+      facts: [],
       corners: undefined
     }
   }
@@ -337,7 +388,15 @@ export async function scrapeWikipediaData(circuitId: string): Promise<WikipediaD
 
     console.log(`Fetched ${Object.keys(infobox).length} infobox fields for ${circuitId}`)
     if (Object.keys(infobox).length > 0) {
-      console.log(`Sample infobox keys:`, Object.keys(infobox).slice(0, 10))
+      console.log(`Sample infobox keys for ${circuitId}:`, Object.keys(infobox).slice(0, 10))
+    }
+
+    if (!content && Object.keys(infobox).length === 0) {
+      console.warn(`No Wikipedia data retrieved for ${circuitId} from ${wikipediaTitle}`)
+      return { 
+        facts: [],
+        corners: undefined
+      }
     }
 
     const circuitName = wikipediaTitle.replace(/_/g, ' ')
@@ -349,11 +408,7 @@ export async function scrapeWikipediaData(circuitId: string): Promise<WikipediaD
     const raceStats = extractRaceStatistics(content, infobox)
 
     const result = {
-      facts: facts.length > 0 ? facts : [
-        'One of Formula 1\'s iconic racing circuits',
-        'Features a challenging layout with technical sections',
-        'Has hosted many memorable races over the years'
-      ],
+      facts,
       length,
       corners,
       firstGP,
@@ -371,14 +426,17 @@ export async function scrapeWikipediaData(circuitId: string): Promise<WikipediaD
       hasLength: !!result.length,
       hasCorners: !!result.corners,
       hasFirstGP: !!result.firstGP,
-      hasStats: !!result.totalRaces
+      hasLapRecord: !!result.lapRecord,
+      hasTotalRaces: !!result.totalRaces,
+      hasYearRange: !!result.yearRange,
+      hasMostWins: !!result.mostWins
     })
 
     return result
   } catch (error) {
     console.error(`Error scraping Wikipedia for ${circuitId}:`, error)
     return { 
-      facts: ['Formula 1 racing circuit'],
+      facts: [],
       corners: undefined
     }
   }

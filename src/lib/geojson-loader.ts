@@ -453,25 +453,53 @@ async function parseGeoJSON(geojson: GeoJSONCollection, circuitId: string): Prom
     facts: ['Formula 1 racing circuit']
   }
 
-  console.log(`Fetching Wikipedia data for ${circuitId}...`)
-  const wikiData = await scrapeWikipediaData(circuitId)
-  console.log(`Wikipedia data for ${circuitId}:`, wikiData)
+  let wikiData
+  try {
+    console.log(`Fetching Wikipedia data for ${circuitId}...`)
+    wikiData = await scrapeWikipediaData(circuitId)
+    console.log(`Wikipedia data for ${circuitId}:`, {
+      factsCount: wikiData.facts?.length || 0,
+      hasLength: !!wikiData.length,
+      hasCorners: !!wikiData.corners,
+      hasFirstGP: !!wikiData.firstGP,
+      hasTotalRaces: !!wikiData.totalRaces,
+      hasYearRange: !!wikiData.yearRange,
+      hasMostWins: !!wikiData.mostWins
+    })
+  } catch (error) {
+    console.error(`Error fetching Wikipedia data for ${circuitId}:`, error)
+    wikiData = { facts: [] }
+  }
 
-  return {
+  const circuit = {
     id: circuitId,
     name: basicInfo.name,
     location: basicInfo.location,
     country: basicInfo.country,
     layout,
-    facts: wikiData.facts.length > 0 ? wikiData.facts : (basicInfo.facts || ['Formula 1 racing circuit']),
-    length: wikiData.length || basicInfo.length || 'Unknown',
-    lapRecord: wikiData.lapRecord,
-    firstGP: wikiData.firstGP || basicInfo.firstGP,
-    corners: wikiData.corners || basicInfo.corners || Math.max(10, Math.floor(layout.length / 10)),
-    totalRaces: wikiData.totalRaces,
-    yearRange: wikiData.yearRange,
-    mostWins: wikiData.mostWins
+    facts: (wikiData?.facts && wikiData.facts.length > 0) ? wikiData.facts : (basicInfo.facts || ['Formula 1 racing circuit']),
+    length: wikiData?.length || basicInfo.length || 'Unknown',
+    lapRecord: wikiData?.lapRecord || undefined,
+    firstGP: wikiData?.firstGP || basicInfo.firstGP || undefined,
+    corners: wikiData?.corners || basicInfo.corners || Math.max(10, Math.floor(layout.length / 10)),
+    totalRaces: wikiData?.totalRaces || undefined,
+    yearRange: wikiData?.yearRange || undefined,
+    mostWins: wikiData?.mostWins || undefined
   }
+
+  console.log(`Final circuit data for ${circuitId}:`, {
+    name: circuit.name,
+    location: circuit.location,
+    factsCount: circuit.facts.length,
+    length: circuit.length,
+    corners: circuit.corners,
+    firstGP: circuit.firstGP,
+    totalRaces: circuit.totalRaces,
+    yearRange: circuit.yearRange,
+    mostWins: circuit.mostWins ? `${circuit.mostWins.driver} (${circuit.mostWins.wins})` : 'none'
+  })
+
+  return circuit
 }
 
 export async function loadCircuitFromGitHub(circuitId: string): Promise<Circuit | null> {
