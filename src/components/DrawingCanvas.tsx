@@ -49,7 +49,7 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
     const primaryColor = `oklch(${rootStyles.getPropertyValue('--primary').trim()})`
     const accentColor = `oklch(${rootStyles.getPropertyValue('--accent').trim()})`
 
-    if (overlayCircuit && overlayCircuit.length > 0) {
+    if (overlayCircuit && overlayCircuit.length > 0 && !isDrawing) {
       if (points.length > 0) {
         const alignedCircuit = alignCircuitToDrawing(overlayCircuit, points)
         drawPath(ctx, alignedCircuit, rect.width, rect.height, accentColor, 2.5, [5, 5])
@@ -61,7 +61,7 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
     if (points.length > 0) {
       drawPath(ctx, points, rect.width, rect.height, primaryColor, 3)
     }
-  }, [points, overlayCircuit, theme])
+  }, [points, overlayCircuit, theme, isDrawing])
 
   const drawPath = (
     ctx: CanvasRenderingContext2D,

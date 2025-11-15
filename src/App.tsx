@@ -104,9 +104,11 @@ function App() {
 
   const displayPercentage = matchedCircuit ? matchedCircuit.similarity : 100
 
-  const showOverlay = (selectedCircuitId && !hasDrawn) || matchedCircuit
+  const showOverlay = matchedCircuit || (selectedCircuitId && !hasDrawn)
   
-  const overlayCircuitPoints = showOverlay && currentCircuit 
+  const overlayCircuitPoints = showOverlay && currentCircuit && !hasDrawn
+    ? [...currentCircuit.layout, currentCircuit.layout[0]]
+    : matchedCircuit && currentCircuit
     ? [...currentCircuit.layout, currentCircuit.layout[0]]
     : undefined
 
