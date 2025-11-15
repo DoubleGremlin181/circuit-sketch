@@ -7,8 +7,21 @@ export interface MatchResult {
   similarity: number
 }
 
-function normalizePoints(points: Point[]): Point[] {
-  if (points.length === 0) return []
+export interface BoundingBox {
+  minX: number
+  maxX: number
+  minY: number
+  maxY: number
+  width: number
+  height: number
+  centerX: number
+  centerY: number
+}
+
+export function getBoundingBox(points: Point[]): BoundingBox {
+  if (points.length === 0) {
+    return { minX: 0, maxX: 0, minY: 0, maxY: 0, width: 0, height: 0, centerX: 0, centerY: 0 }
+  }
   
   const minX = Math.min(...points.map(p => p.x))
   const maxX = Math.max(...points.map(p => p.x))
@@ -17,13 +30,39 @@ function normalizePoints(points: Point[]): Point[] {
   
   const width = maxX - minX
   const height = maxY - minY
-  const scale = Math.max(width, height)
+  const centerX = (minX + maxX) / 2
+  const centerY = (minY + maxY) / 2
+  
+  return { minX, maxX, minY, maxY, width, height, centerX, centerY }
+}
+
+function normalizePoints(points: Point[]): Point[] {
+  if (points.length === 0) return []
+  
+  const bbox = getBoundingBox(points)
+  const scale = Math.max(bbox.width, bbox.height)
   
   if (scale === 0) return points
   
   return points.map(p => ({
-    x: (p.x - minX) / scale,
-    y: (p.y - minY) / scale
+    x: (p.x - bbox.minX) / scale,
+    y: (p.y - bbox.minY) / scale
+  }))
+}
+
+export function alignCircuitToDrawing(circuitPoints: Point[], drawnPoints: Point[]): Point[] {
+  if (circuitPoints.length === 0 || drawnPoints.length === 0) return circuitPoints
+  
+  const drawnBBox = getBoundingBox(drawnPoints)
+  const circuitBBox = getBoundingBox(circuitPoints)
+  
+  const scaleX = drawnBBox.width / circuitBBox.width
+  const scaleY = drawnBBox.height / circuitBBox.height
+  const scale = Math.min(scaleX, scaleY)
+  
+  return circuitPoints.map(p => ({
+    x: drawnBBox.minX + (p.x - circuitBBox.minX) * scale + (drawnBBox.width - circuitBBox.width * scale) / 2,
+    y: drawnBBox.minY + (p.y - circuitBBox.minY) * scale + (drawnBBox.height - circuitBBox.height * scale) / 2
   }))
 }
 

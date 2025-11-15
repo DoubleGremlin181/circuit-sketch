@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
-import { Point } from '@/lib/matching'
+import { Point, alignCircuitToDrawing } from '@/lib/matching'
 
 interface DrawingCanvasProps {
   onDrawingComplete: (points: Point[]) => void
@@ -26,11 +26,13 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
 
     ctx.clearRect(0, 0, rect.width, rect.height)
 
-    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim()
-    const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()
+    const rootStyles = getComputedStyle(document.documentElement)
+    const primaryColor = rootStyles.getPropertyValue('--primary').trim()
+    const accentColor = rootStyles.getPropertyValue('--accent').trim()
 
-    if (overlayCircuit && overlayCircuit.length > 0) {
-      drawPath(ctx, overlayCircuit, rect.width, rect.height, accentColor, 2.5, [5, 5])
+    if (overlayCircuit && overlayCircuit.length > 0 && points.length > 0) {
+      const alignedCircuit = alignCircuitToDrawing(overlayCircuit, points)
+      drawPath(ctx, alignedCircuit, rect.width, rect.height, accentColor, 2.5, [5, 5])
     }
 
     if (points.length > 0) {
@@ -139,7 +141,7 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
   return (
     <canvas
       ref={canvasRef}
-      className={`w-full aspect-[4/3] md:aspect-[16/9] border-2 rounded-lg touch-none cursor-crosshair transition-colors ${
+      className={`w-full aspect-[4/3] md:aspect-[16/9] border-2 rounded-lg touch-none cursor-crosshair transition-colors bg-card ${
         isDrawing
           ? 'border-primary shadow-lg'
           : disabled
