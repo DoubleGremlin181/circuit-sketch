@@ -44,10 +44,15 @@ function App() {
     setHasDrawn(true)
     setSelectedCircuitId('')
 
-    const matches = circuits.map(circuit => ({
-      circuitId: circuit.id,
-      similarity: matchShape(points, circuit.layout, currentAlgorithm)
-    }))
+    const matches = circuits.map(circuit => {
+      // Close the circuit layout by adding the first point at the end
+      // This ensures consistency with the drawn points which are already closed
+      const closedCircuitLayout = [...circuit.layout, circuit.layout[0]]
+      return {
+        circuitId: circuit.id,
+        similarity: matchShape(points, closedCircuitLayout, currentAlgorithm)
+      }
+    })
 
     matches.sort((a, b) => b.similarity - a.similarity)
 
@@ -88,9 +93,7 @@ function App() {
 
   const showOverlay = matchedCircuit || (selectedCircuitId && !hasDrawn)
   
-  const overlayCircuitPoints = showOverlay && currentCircuit && !hasDrawn
-    ? [...currentCircuit.layout, currentCircuit.layout[0]]
-    : matchedCircuit && currentCircuit
+  const overlayCircuitPoints = showOverlay && currentCircuit
     ? [...currentCircuit.layout, currentCircuit.layout[0]]
     : undefined
 

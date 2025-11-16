@@ -157,7 +157,23 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
 
     if (points.length > 5) {
       // Clean up self-intersections
-      const cleanedPoints = cleanupSelfIntersection(points)
+      let cleanedPoints = cleanupSelfIntersection(points)
+      
+      // Auto-close: if the end point is close to the start point, remove the last point
+      // (we'll add the first point as the closing point anyway)
+      if (cleanedPoints.length > 2) {
+        const firstPoint = cleanedPoints[0]
+        const lastPoint = cleanedPoints[cleanedPoints.length - 1]
+        const dx = lastPoint.x - firstPoint.x
+        const dy = lastPoint.y - firstPoint.y
+        const distance = Math.sqrt(dx * dx + dy * dy)
+        
+        // If within 5% of canvas diagonal, remove the last point (auto-close)
+        const threshold = 0.05
+        if (distance < threshold) {
+          cleanedPoints = cleanedPoints.slice(0, -1)
+        }
+      }
       
       // Close the loop by adding the first point at the end
       const closedPoints = [...cleanedPoints, cleanedPoints[0]]
