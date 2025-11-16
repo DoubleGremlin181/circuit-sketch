@@ -17,13 +17,13 @@ interface MatchedCircuit {
 }
 
 function App() {
-  const [algorithm, setAlgorithm] = useLocalStorage<MatchAlgorithm>('match-algorithm', 'hausdorff')
+  const [algorithm, setAlgorithm] = useLocalStorage<MatchAlgorithm>('match-algorithm', 'frechet')
   const [matchedCircuit, setMatchedCircuit] = useState<MatchedCircuit | null>(null)
   const [key, setKey] = useState(0)
   const [selectedCircuitId, setSelectedCircuitId] = useState<string>('')
   const [hasDrawn, setHasDrawn] = useState(false)
 
-  const currentAlgorithm = algorithm || 'hausdorff'
+  const currentAlgorithm = algorithm || 'frechet'
 
 
   const handleDrawingStart = () => {
