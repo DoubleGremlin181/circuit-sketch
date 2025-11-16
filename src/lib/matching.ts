@@ -36,6 +36,80 @@ export function getBoundingBox(points: Point[]): BoundingBox {
   return { minX, maxX, minY, maxY, width, height, centerX, centerY }
 }
 
+/**
+ * Check if two line segments intersect
+ */
+function segmentsIntersect(p1: Point, p2: Point, p3: Point, p4: Point): Point | null {
+  const x1 = p1.x, y1 = p1.y
+  const x2 = p2.x, y2 = p2.y
+  const x3 = p3.x, y3 = p3.y
+  const x4 = p4.x, y4 = p4.y
+  
+  const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+  
+  // Lines are parallel
+  if (Math.abs(denom) < 1e-10) return null
+  
+  const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom
+  const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom
+  
+  // Check if intersection is within both line segments
+  if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+    return {
+      x: x1 + t * (x2 - x1),
+      y: y1 + t * (y2 - y1)
+    }
+  }
+  
+  return null
+}
+
+/**
+ * Find the first self-intersection in a path
+ * Returns the index where the intersection occurs, or -1 if no intersection
+ */
+function findFirstSelfIntersection(points: Point[]): number {
+  if (points.length < 4) return -1
+  
+  // Check each line segment against all previous segments (skipping adjacent ones)
+  for (let i = 2; i < points.length - 1; i++) {
+    const currentSegment = { p1: points[i], p2: points[i + 1] }
+    
+    // Check against all previous segments, excluding the immediately adjacent one
+    for (let j = 0; j < i - 1; j++) {
+      const prevSegment = { p1: points[j], p2: points[j + 1] }
+      
+      if (segmentsIntersect(currentSegment.p1, currentSegment.p2, prevSegment.p1, prevSegment.p2)) {
+        // Found intersection - return the index where we should truncate
+        return i
+      }
+    }
+  }
+  
+  return -1
+}
+
+/**
+ * Clean up self-intersecting paths by truncating at the first intersection
+ * and ensuring the path forms a closed loop
+ */
+export function cleanupSelfIntersection(points: Point[]): Point[] {
+  if (points.length < 4) return points
+  
+  const intersectionIndex = findFirstSelfIntersection(points)
+  
+  if (intersectionIndex !== -1) {
+    // Truncate at the intersection point
+    return points.slice(0, intersectionIndex + 1)
+  }
+  
+  return points
+}
+
+/**
+ * Normalize points: translate to origin and scale to unit size
+ * Note: Does NOT apply rotation - preserves original orientation
+ */
 function normalizePoints(points: Point[]): Point[] {
   if (points.length === 0) return []
   
@@ -115,9 +189,22 @@ function hausdorffDistance(points1: Point[], points2: Point[]): number {
   return Math.max(directional(points1, points2), directional(points2, points1))
 }
 
-function frechetDistance(points1: Point[], points2: Point[]): number {
+/**
+ * Rotate an array to start from a different index
+ */
+function rotateArray<T>(arr: T[], startIndex: number): T[] {
+  if (arr.length === 0) return arr
+  const idx = ((startIndex % arr.length) + arr.length) % arr.length
+  return [...arr.slice(idx), ...arr.slice(0, idx)]
+}
+
+/**
+ * Compute Frechet distance with a specific starting offset for points2
+ */
+function frechetDistanceWithOffset(points1: Point[], points2: Point[], offset: number): number {
+  const rotated2 = rotateArray(points2, offset)
   const n = points1.length
-  const m = points2.length
+  const m = rotated2.length
   const ca: number[][] = Array(n).fill(0).map(() => Array(m).fill(-1))
   
   const distance = (p1: Point, p2: Point) =>
@@ -126,7 +213,7 @@ function frechetDistance(points1: Point[], points2: Point[]): number {
   const compute = (i: number, j: number): number => {
     if (ca[i][j] > -1) return ca[i][j]
     
-    const dist = distance(points1[i], points2[j])
+    const dist = distance(points1[i], rotated2[j])
     
     if (i === 0 && j === 0) {
       ca[i][j] = dist
@@ -147,7 +234,28 @@ function frechetDistance(points1: Point[], points2: Point[]): number {
   return compute(n - 1, m - 1)
 }
 
-function turningAngleDistance(points1: Point[], points2: Point[]): number {
+/**
+ * Find optimal Frechet distance by trying different starting points
+ */
+function frechetDistance(points1: Point[], points2: Point[]): number {
+  if (points1.length === 0 || points2.length === 0) return Infinity
+  
+  // Try multiple starting points (sample every 8th point for efficiency)
+  const step = Math.max(1, Math.floor(points2.length / 8))
+  let minDistance = Infinity
+  
+  for (let offset = 0; offset < points2.length; offset += step) {
+    const dist = frechetDistanceWithOffset(points1, points2, offset)
+    minDistance = Math.min(minDistance, dist)
+  }
+  
+  return minDistance
+}
+
+/**
+ * Compute turning angle distance with a specific starting offset for points2
+ */
+function turningAngleDistanceWithOffset(points1: Point[], points2: Point[], offset: number): number {
   const getAngles = (points: Point[]): number[] => {
     const angles: number[] = []
     for (let i = 0; i < points.length; i++) {
@@ -168,7 +276,8 @@ function turningAngleDistance(points1: Point[], points2: Point[]): number {
   }
   
   const angles1 = getAngles(points1)
-  const angles2 = getAngles(points2)
+  const rotated2 = rotateArray(points2, offset)
+  const angles2 = getAngles(rotated2)
   
   const minLen = Math.min(angles1.length, angles2.length)
   let sum = 0
@@ -178,6 +287,24 @@ function turningAngleDistance(points1: Point[], points2: Point[]): number {
   }
   
   return sum / minLen
+}
+
+/**
+ * Find optimal turning angle distance by trying different starting points
+ */
+function turningAngleDistance(points1: Point[], points2: Point[]): number {
+  if (points1.length === 0 || points2.length === 0) return Infinity
+  
+  // Try multiple starting points (sample every 8th point for efficiency)
+  const step = Math.max(1, Math.floor(points2.length / 8))
+  let minDistance = Infinity
+  
+  for (let offset = 0; offset < points2.length; offset += step) {
+    const dist = turningAngleDistanceWithOffset(points1, points2, offset)
+    minDistance = Math.min(minDistance, dist)
+  }
+  
+  return minDistance
 }
 
 export function matchShape(
@@ -194,19 +321,28 @@ export function matchShape(
   const resampled2 = resamplePoints(normalized2, numSamples)
   
   let distance: number
+  let similarity: number
   
   switch (algorithm) {
     case 'hausdorff':
       distance = hausdorffDistance(resampled1, resampled2)
-      return Math.max(0, 100 - distance * 150)
+      // Improved scoring: use exponential decay for better range
+      // Typical good matches have distance < 0.1, poor matches > 0.3
+      similarity = 100 * Math.exp(-distance * 8)
+      return Math.max(0, Math.min(100, similarity))
     
     case 'frechet':
       distance = frechetDistance(resampled1, resampled2)
-      return Math.max(0, 100 - distance * 150)
+      // Frechet distance typically ranges from 0.05 (good) to 0.3+ (poor)
+      similarity = 100 * Math.exp(-distance * 10)
+      return Math.max(0, Math.min(100, similarity))
     
     case 'turning-angle':
       distance = turningAngleDistance(resampled1, resampled2)
-      return Math.max(0, 100 - (distance / Math.PI) * 100)
+      // Turning angle distance ranges from 0 to ~PI
+      // Good matches have distance < 0.5, poor matches > 1.5
+      similarity = 100 * Math.exp(-distance * 2)
+      return Math.max(0, Math.min(100, similarity))
     
     default:
       return 0

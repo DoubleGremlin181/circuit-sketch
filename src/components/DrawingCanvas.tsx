@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
-import { Point, alignCircuitToDrawing } from '@/lib/matching'
+import { Point, alignCircuitToDrawing, cleanupSelfIntersection } from '@/lib/matching'
 
 interface DrawingCanvasProps {
   onDrawingComplete: (points: Point[]) => void
@@ -156,7 +156,11 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
     setIsDrawing(false)
 
     if (points.length > 5) {
-      const closedPoints = [...points, points[0]]
+      // Clean up self-intersections
+      const cleanedPoints = cleanupSelfIntersection(points)
+      
+      // Close the loop by adding the first point at the end
+      const closedPoints = [...cleanedPoints, cleanedPoints[0]]
       onDrawingComplete(closedPoints)
     }
   }
