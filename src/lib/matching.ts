@@ -4,6 +4,7 @@ export type MatchAlgorithm = 'hausdorff' | 'frechet' | 'turning-angle'
 
 export interface MatchResult {
   circuitId: string
+  /** Similarity score ranging from 0 to 100, where 100 is a perfect match */
   similarity: number
 }
 
@@ -307,6 +308,37 @@ function turningAngleDistance(points1: Point[], points2: Point[]): number {
   return minDistance
 }
 
+/**
+ * Calculate similarity between a drawn shape and a circuit layout using the specified algorithm.
+ * 
+ * @param drawnPoints - Array of points representing the user's drawn shape
+ * @param circuitPoints - Array of points representing the circuit layout
+ * @param algorithm - The matching algorithm to use ('hausdorff', 'frechet', or 'turning-angle')
+ * 
+ * @returns Similarity score from 0 to 100, where:
+ *   - 100 = Perfect match (identical shapes)
+ *   - 75-99 = Excellent match
+ *   - 50-74 = Good match
+ *   - 25-49 = Fair match
+ *   - 0-24 = Poor match
+ * 
+ * **Algorithm Details:**
+ * 
+ * - **Hausdorff Distance**: Measures the greatest distance from any point on one shape
+ *   to the closest point on another. Raw distances typically range from 0.0 (perfect) to 1.0+.
+ *   The score uses exponential decay: `100 * exp(-distance * 3)` and is clamped to [0, 100].
+ * 
+ * - **Fréchet Distance**: Considers the order of points along the path, similar to walking
+ *   a dog on a leash. Raw distances typically range from 0.0 (perfect) to 1.0+.
+ *   The score uses exponential decay: `100 * exp(-distance * 4)` and is clamped to [0, 100].
+ * 
+ * - **Turning Angle**: Compares the sequence of turning angles at each point. Raw distances
+ *   range from 0 (identical angles) to ~π (opposite angles).
+ *   The score uses exponential decay: `100 * exp(-distance * 2)` and is clamped to [0, 100].
+ * 
+ * All algorithms normalize and resample shapes to 64 points before comparison, ensuring
+ * scale and translation invariance while preserving orientation.
+ */
 export function matchShape(
   drawnPoints: Point[],
   circuitPoints: Point[],
@@ -326,22 +358,26 @@ export function matchShape(
   switch (algorithm) {
     case 'hausdorff':
       distance = hausdorffDistance(resampled1, resampled2)
-      // Adjusted scoring for current data distribution
-      // Based on observed distances: good matches ~0.4-0.5, poor matches > 0.6
+      // Convert raw Hausdorff distance (0.0 to 1.0+) to similarity percentage (0 to 100)
+      // Exponential decay provides good discrimination: good matches ~0.4-0.5, poor matches > 0.6
       similarity = 100 * Math.exp(-distance * 3)
+      // Clamp to valid percentage range [0, 100]
       return Math.max(0, Math.min(100, similarity))
     
     case 'frechet':
       distance = frechetDistance(resampled1, resampled2)
-      // Adjusted scoring for Frechet distance
+      // Convert raw Fréchet distance (0.0 to 1.0+) to similarity percentage (0 to 100)
+      // Uses steeper decay factor for better sensitivity to path ordering
       similarity = 100 * Math.exp(-distance * 4)
+      // Clamp to valid percentage range [0, 100]
       return Math.max(0, Math.min(100, similarity))
     
     case 'turning-angle':
       distance = turningAngleDistance(resampled1, resampled2)
-      // Turning angle distance ranges from 0 to ~PI
+      // Convert raw turning angle distance (0 to ~π) to similarity percentage (0 to 100)
       // Good matches have distance < 0.5, poor matches > 1.5
       similarity = 100 * Math.exp(-distance * 2)
+      // Clamp to valid percentage range [0, 100]
       return Math.max(0, Math.min(100, similarity))
     
     default:

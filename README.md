@@ -13,6 +13,26 @@ Draw shapes and match them against real Formula 1 circuit layouts using shape re
 - 🌓 **Dark Mode**: Full theme support
 - ⚡ **Static Hosting**: No server required, works offline
 
+## Matching Algorithms
+
+Circuit Sketch uses three different algorithms to compare your drawing with F1 circuit layouts. All algorithms return a **similarity score from 0 to 100**, where:
+
+- **100** = Perfect match (identical shapes)
+- **75-99** = Excellent match
+- **50-74** = Good match  
+- **25-49** = Fair match
+- **0-24** = Poor match
+
+### Algorithm Types
+
+1. **Hausdorff Distance**: Measures the greatest distance from any point on one shape to the closest point on another. Best for overall shape similarity.
+
+2. **Fréchet Distance**: Considers the order of points along the path, similar to walking a dog on a leash. Better for comparing directional flow and path ordering.
+
+3. **Turning Angle**: Compares the sequence of turning angles at each point. Excellent for matching corner sequences and shape complexity.
+
+All algorithms normalize shapes for scale and position, then resample to 64 points before comparison. The raw distance metrics are converted to percentage scores using exponential decay functions, ensuring the final score always falls within the 0-100 range.
+
 ## Quick Start
 
 ```bash
