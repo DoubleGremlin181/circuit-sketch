@@ -18,6 +18,7 @@ export interface Circuit {
     driver: string
     wins: number
   }
+  wikipediaUrl?: string
 }
 
 interface StoredCircuit {
@@ -40,6 +41,7 @@ interface StoredWikipediaData {
     driver: string
     wins: number
   }
+  wikipediaUrl?: string
 }
 
 const wikipediaData = wikipediaRaw as Record<string, StoredWikipediaData>
@@ -86,7 +88,8 @@ function buildCircuits(): Circuit[] {
       corners,
       totalRaces: wiki?.totalRaces,
       yearRange: wiki?.yearRange,
-      mostWins: wiki?.mostWins
+      mostWins: wiki?.mostWins,
+      wikipediaUrl: wiki?.wikipediaUrl
     }
   })
 }

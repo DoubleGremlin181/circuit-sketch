@@ -2,6 +2,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Separator } from '@/components/ui/separator'
 import { Gear } from '@phosphor-icons/react'
 import { MatchAlgorithm } from '@/lib/matching'
 
@@ -19,14 +20,25 @@ export function SettingsSheet({ algorithm, onAlgorithmChange }: SettingsSheetPro
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-full sm:max-w-md">
-        <SheetHeader>
+        <SheetHeader className="pb-4">
           <SheetTitle>Settings</SheetTitle>
           <SheetDescription>
-            Choose how circuit similarity is calculated
+            Configure your circuit matching preferences
           </SheetDescription>
         </SheetHeader>
         
-        <div className="mt-6">
+        <Separator className="my-4" />
+        
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Matching Algorithm
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Choose how circuit similarity is calculated
+            </p>
+          </div>
+          
           <RadioGroup value={algorithm} onValueChange={(value) => onAlgorithmChange(value as MatchAlgorithm)}>
             <div className="space-y-4">
               <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">

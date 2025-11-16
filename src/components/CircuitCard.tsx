@@ -3,7 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { Flag, MapPin, Trophy, Calendar } from '@phosphor-icons/react'
+import { Button } from '@/components/ui/button'
+import { Flag, MapPin, Trophy, Calendar, Article } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 
 interface CircuitCardProps {
@@ -36,14 +37,29 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
                 {circuit.location || 'Unknown Location'}
               </CardDescription>
             </div>
-            {showMatchBadge && (
-              <Badge 
-                variant={matchPercentage >= 75 ? 'default' : 'secondary'}
-                className="text-lg px-3 py-1.5 font-semibold bg-accent text-accent-foreground"
-              >
-                {matchPercentage.toFixed(0)}%
-              </Badge>
-            )}
+            <div className="flex items-center gap-2">
+              {circuit.wikipediaUrl && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  asChild
+                  className="gap-1.5"
+                >
+                  <a href={circuit.wikipediaUrl} target="_blank" rel="noopener noreferrer">
+                    <Article size={16} weight="duotone" />
+                    Wikipedia
+                  </a>
+                </Button>
+              )}
+              {showMatchBadge && (
+                <Badge 
+                  variant={matchPercentage >= 75 ? 'default' : 'secondary'}
+                  className="text-lg px-3 py-1.5 font-semibold bg-accent text-accent-foreground"
+                >
+                  {matchPercentage.toFixed(0)}%
+                </Badge>
+              )}
+            </div>
           </div>
         </CardHeader>
         
@@ -126,7 +142,7 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
                 <h4 className="font-medium text-sm mb-3 text-muted-foreground uppercase tracking-wide">
                   Circuit Facts
                 </h4>
-                <ScrollArea className="h-[200px] pr-4">
+                <ScrollArea className="h-[400px] pr-4">
                   <ul className="space-y-3">
                     {circuit.facts.map((fact, index) => (
                       <motion.li

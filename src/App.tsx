@@ -133,7 +133,7 @@ function App() {
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium">Draw or Browse</h2>
+                <h2 className="text-lg font-medium">Canvas</h2>
                 <Button
                   variant="outline"
                   size="sm"
@@ -146,13 +146,13 @@ function App() {
               </div>
 
               <Select value={selectedCircuitId} onValueChange={handleCircuitSelect}>
-                <SelectTrigger className="w-full h-12 text-base">
-                  <SelectValue placeholder="Select a circuit to view or draw below" />
+                <SelectTrigger className="w-full h-auto min-h-12 text-base">
+                  <SelectValue placeholder="Select a circuit to display" />
                 </SelectTrigger>
                 <SelectContent>
                   {circuits.map(circuit => (
                     <SelectItem key={circuit.id} value={circuit.id} className="text-base">
-                      <div className="flex flex-col">
+                      <div className="flex flex-col items-start">
                         <span className="font-medium">{circuit.name}</span>
                         <span className="text-xs text-muted-foreground">{circuit.location}</span>
                       </div>
@@ -171,8 +171,8 @@ function App() {
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
                   <Pencil size={16} weight="duotone" />
                   {selectedCircuitId 
-                    ? 'Circuit displayed above - draw to compare' 
-                    : 'Draw a closed shape or select a circuit above'}
+                    ? 'Draw to compare with the circuit shown above' 
+                    : 'Draw a closed shape or select a circuit from the dropdown'}
                 </p>
               </div>
             </div>
@@ -197,7 +197,7 @@ function App() {
                     No circuit selected
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Draw a circuit shape or select a circuit to see details
+                    Draw a shape or select a circuit to view details
                   </p>
                 </div>
               )}

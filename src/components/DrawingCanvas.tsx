@@ -54,7 +54,7 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
         const alignedCircuit = alignCircuitToDrawing(overlayCircuit, points)
         drawPath(ctx, alignedCircuit, rect.width, rect.height, accentColor, 2.5, [5, 5])
       } else {
-        drawPath(ctx, overlayCircuit, rect.width, rect.height, primaryColor, 3)
+        drawPath(ctx, overlayCircuit, rect.width, rect.height, primaryColor, 3, [], true)
       }
     }
 
@@ -70,7 +70,8 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
     height: number,
     strokeStyle: string = 'oklch(0.55 0.22 25)',
     lineWidth: number = 3,
-    lineDash: number[] = []
+    lineDash: number[] = [],
+    addPadding: boolean = false
   ) => {
     if (pathPoints.length < 2) return
 
@@ -82,11 +83,16 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
     ctx.globalAlpha = lineDash.length > 0 ? 0.6 : 1
     ctx.setLineDash(lineDash)
 
+    // Add padding to prevent the circuit from touching the edges
+    const paddingFactor = addPadding ? 0.9 : 1
+    const offsetX = addPadding ? (width * (1 - paddingFactor)) / 2 : 0
+    const offsetY = addPadding ? (height * (1 - paddingFactor)) / 2 : 0
+
     ctx.beginPath()
-    ctx.moveTo(pathPoints[0].x * width, pathPoints[0].y * height)
+    ctx.moveTo(pathPoints[0].x * width * paddingFactor + offsetX, pathPoints[0].y * height * paddingFactor + offsetY)
 
     for (let i = 1; i < pathPoints.length; i++) {
-      ctx.lineTo(pathPoints[i].x * width, pathPoints[i].y * height)
+      ctx.lineTo(pathPoints[i].x * width * paddingFactor + offsetX, pathPoints[i].y * height * paddingFactor + offsetY)
     }
 
     ctx.stroke()
