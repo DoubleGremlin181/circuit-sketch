@@ -326,15 +326,15 @@ export function matchShape(
   switch (algorithm) {
     case 'hausdorff':
       distance = hausdorffDistance(resampled1, resampled2)
-      // Improved scoring: use exponential decay for better range
-      // Typical good matches have distance < 0.1, poor matches > 0.3
-      similarity = 100 * Math.exp(-distance * 8)
+      // Adjusted scoring for current data distribution
+      // Based on observed distances: good matches ~0.4-0.5, poor matches > 0.6
+      similarity = 100 * Math.exp(-distance * 3)
       return Math.max(0, Math.min(100, similarity))
     
     case 'frechet':
       distance = frechetDistance(resampled1, resampled2)
-      // Frechet distance typically ranges from 0.05 (good) to 0.3+ (poor)
-      similarity = 100 * Math.exp(-distance * 10)
+      // Adjusted scoring for Frechet distance
+      similarity = 100 * Math.exp(-distance * 4)
       return Math.max(0, Math.min(100, similarity))
     
     case 'turning-angle':

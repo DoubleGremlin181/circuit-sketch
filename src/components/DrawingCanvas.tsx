@@ -52,14 +52,15 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
     if (overlayCircuit && overlayCircuit.length > 0 && !isDrawing) {
       if (points.length > 0) {
         const alignedCircuit = alignCircuitToDrawing(overlayCircuit, points)
-        drawPath(ctx, alignedCircuit, rect.width, rect.height, accentColor, 2.5, [5, 5])
+        drawPath(ctx, alignedCircuit, rect.width, rect.height, accentColor, 2.5, [5, 5], false, true)
       } else {
-        drawPath(ctx, overlayCircuit, rect.width, rect.height, primaryColor, 3, [], true)
+        drawPath(ctx, overlayCircuit, rect.width, rect.height, primaryColor, 3, [], true, true)
       }
     }
 
     if (points.length > 0) {
-      drawPath(ctx, points, rect.width, rect.height, primaryColor, 3)
+      // Close the path only when not actively drawing
+      drawPath(ctx, points, rect.width, rect.height, primaryColor, 3, [], false, !isDrawing)
     }
   }, [points, overlayCircuit, theme, isDrawing])
 
@@ -71,7 +72,8 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
     strokeStyle: string = 'oklch(0.55 0.22 25)',
     lineWidth: number = 3,
     lineDash: number[] = [],
-    addPadding: boolean = false
+    addPadding: boolean = false,
+    closePath: boolean = true
   ) => {
     if (pathPoints.length < 2) return
 
@@ -93,6 +95,11 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
 
     for (let i = 1; i < pathPoints.length; i++) {
       ctx.lineTo(pathPoints[i].x * width * paddingFactor + offsetX, pathPoints[i].y * height * paddingFactor + offsetY)
+    }
+
+    // Close the path by connecting back to the start
+    if (closePath && pathPoints.length > 2) {
+      ctx.lineTo(pathPoints[0].x * width * paddingFactor + offsetX, pathPoints[0].y * height * paddingFactor + offsetY)
     }
 
     ctx.stroke()
@@ -157,7 +164,23 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
 
     if (points.length > 5) {
       // Clean up self-intersections
-      const cleanedPoints = cleanupSelfIntersection(points)
+      let cleanedPoints = cleanupSelfIntersection(points)
+      
+      // Auto-close: if the end point is close to the start point, remove the last point
+      // (we'll add the first point as the closing point anyway)
+      if (cleanedPoints.length > 2) {
+        const firstPoint = cleanedPoints[0]
+        const lastPoint = cleanedPoints[cleanedPoints.length - 1]
+        const dx = lastPoint.x - firstPoint.x
+        const dy = lastPoint.y - firstPoint.y
+        const distance = Math.sqrt(dx * dx + dy * dy)
+        
+        // If within 5% of canvas diagonal, remove the last point (auto-close)
+        const threshold = 0.05
+        if (distance < threshold) {
+          cleanedPoints = cleanedPoints.slice(0, -1)
+        }
+      }
       
       // Close the loop by adding the first point at the end
       const closedPoints = [...cleanedPoints, cleanedPoints[0]]
