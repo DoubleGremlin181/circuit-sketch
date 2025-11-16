@@ -15,9 +15,14 @@ interface CircuitCardProps {
 export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
   const showMatchBadge = matchPercentage < 100
   
+  // Physical characteristics of the track
+  const hasPhysicalStats = circuit.length || (circuit.corners && circuit.corners > 0)
+  
+  // Key statistics about races and records
+  const hasKeyStats = circuit.totalRaces || circuit.yearRange || circuit.mostWins || circuit.lapRecord
+  
+  // Separate facts that don't duplicate physical or key stats
   const hasFacts = circuit.facts && circuit.facts.length > 0
-  const hasStats = circuit.totalRaces || circuit.yearRange || circuit.mostWins
-  const hasBasicInfo = circuit.firstGP || circuit.length || (circuit.corners && circuit.corners > 0) || circuit.lapRecord
 
   return (
     <motion.div
@@ -63,70 +68,81 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
           </div>
         </CardHeader>
         
-        <CardContent className="space-y-3">
-          {hasBasicInfo && (
-            <div className="flex flex-wrap gap-2">
-              {circuit.firstGP && (
-                <Badge variant="outline" className="gap-1.5">
-                  <Flag size={14} weight="fill" />
-                  First GP: {circuit.firstGP}
-                </Badge>
-              )}
-              {circuit.length && circuit.length !== 'Unknown' && (
-                <Badge variant="outline">
-                  Length: {circuit.length}
-                </Badge>
-              )}
-              {circuit.corners && circuit.corners > 0 && (
-                <Badge variant="outline">
-                  Corners: {circuit.corners}
-                </Badge>
-              )}
-              {circuit.lapRecord && (
-                <Badge variant="outline" className="hidden sm:inline-flex">
-                  Record: {circuit.lapRecord}
-                </Badge>
-              )}
+        <CardContent className="space-y-4">
+          {/* Section 2: Physical Track Statistics */}
+          {hasPhysicalStats && (
+            <div>
+              <h4 className="font-medium text-sm mb-2 text-muted-foreground uppercase tracking-wide">
+                Track Details
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {circuit.length && circuit.length !== 'Unknown' && (
+                  <Badge variant="secondary" className="text-sm px-3 py-1.5">
+                    Length: {circuit.length}
+                  </Badge>
+                )}
+                {circuit.corners && circuit.corners > 0 && (
+                  <Badge variant="secondary" className="text-sm px-3 py-1.5">
+                    Corners: {circuit.corners}
+                  </Badge>
+                )}
+              </div>
             </div>
           )}
 
-          {hasStats && (
+          {/* Section 3: Key Statistics (Years, Races, Records) */}
+          {hasKeyStats && (
             <>
-              <Separator />
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {circuit.totalRaces && (
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium uppercase tracking-wide">
-                      <Flag size={14} weight="duotone" />
-                      Total Races
+              {hasPhysicalStats && <Separator className="my-4" />}
+              <div>
+                <h4 className="font-medium text-sm mb-3 text-muted-foreground uppercase tracking-wide">
+                  Key Statistics
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {circuit.yearRange && (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium uppercase tracking-wide">
+                        <Calendar size={14} weight="duotone" />
+                        Years Active
+                      </div>
+                      <div className="text-2xl font-bold text-primary">
+                        {circuit.yearRange}
+                      </div>
                     </div>
-                    <div className="text-2xl font-bold text-primary">
-                      {circuit.totalRaces}
+                  )}
+                  {circuit.totalRaces && (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium uppercase tracking-wide">
+                        <Flag size={14} weight="duotone" />
+                        Total Races
+                      </div>
+                      <div className="text-2xl font-bold text-primary">
+                        {circuit.totalRaces}
+                      </div>
                     </div>
-                  </div>
-                )}
-                {circuit.yearRange && (
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium uppercase tracking-wide">
-                      <Calendar size={14} weight="duotone" />
-                      Years Active
+                  )}
+                  {circuit.mostWins && circuit.mostWins.driver && circuit.mostWins.wins > 0 && (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium uppercase tracking-wide">
+                        <Trophy size={14} weight="duotone" />
+                        Most Wins
+                      </div>
+                      <div className="text-base font-bold text-primary">
+                        {circuit.mostWins.driver}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {circuit.mostWins.wins} {circuit.mostWins.wins === 1 ? 'win' : 'wins'}
+                      </div>
                     </div>
-                    <div className="text-2xl font-bold text-primary">
-                      {circuit.yearRange}
+                  )}
+                </div>
+                {circuit.lapRecord && (
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
+                      Fastest Lap
                     </div>
-                  </div>
-                )}
-                {circuit.mostWins && circuit.mostWins.driver && circuit.mostWins.wins > 0 && (
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium uppercase tracking-wide">
-                      <Trophy size={14} weight="duotone" />
-                      Most Wins
-                    </div>
-                    <div className="text-base font-bold text-primary">
-                      {circuit.mostWins.driver}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {circuit.mostWins.wins} {circuit.mostWins.wins === 1 ? 'win' : 'wins'}
+                    <div className="text-sm font-medium">
+                      {circuit.lapRecord}
                     </div>
                   </div>
                 )}
@@ -134,16 +150,16 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
             </>
           )}
 
+          {/* Section 4: Circuit Facts/Trivia */}
           {hasFacts && (
             <>
-              <Separator />
-
+              {(hasPhysicalStats || hasKeyStats) && <Separator className="my-4" />}
               <div>
                 <h4 className="font-medium text-sm mb-3 text-muted-foreground uppercase tracking-wide">
                   Circuit Facts
                 </h4>
-                <ScrollArea className="max-h-[400px] pr-4">
-                  <ul className="space-y-3">
+                <ScrollArea className="max-h-[300px] pr-4">
+                  <ul className="space-y-2.5">
                     {circuit.facts.map((fact, index) => (
                       <motion.li
                         key={index}
@@ -161,7 +177,7 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
             </>
           )}
 
-          {!hasBasicInfo && !hasStats && !hasFacts && (
+          {!hasPhysicalStats && !hasKeyStats && !hasFacts && (
             <div className="text-center py-8 text-muted-foreground">
               <p className="text-sm">Loading circuit information...</p>
             </div>
