@@ -178,6 +178,12 @@ export function DrawingCanvas({ onDrawingComplete, disabled = false, overlayCirc
       // Close the loop by adding the first point at the end
       const closedPoints = [...cleanedPoints, cleanedPoints[0]]
       onDrawingComplete(closedPoints)
+      
+      // After a slight delay, update the canvas to show only the cleaned version
+      // This erases the remainder of the drawing that was clipped due to self-intersection
+      setTimeout(() => {
+        setPoints(closedPoints)
+      }, 500)
     }
   }
 
