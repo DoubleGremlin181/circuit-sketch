@@ -61,3 +61,7 @@ npm run preview
 ## License
 
 MIT License - Copyright GitHub, Inc.
+
+## Acknowledgements
+
+The checkered flag emoji used in the logo and favicon is from [Twemoji](https://github.com/twitter/twemoji) by Twitter, Inc and other contributors. Licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).
