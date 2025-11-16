@@ -4,6 +4,7 @@ import { DrawingCanvas } from '@/components/DrawingCanvas'
 import { CircuitCard } from '@/components/CircuitCard'
 import { SettingsSheet } from '@/components/SettingsSheet'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Toaster } from 'sonner'
@@ -105,7 +106,7 @@ function App() {
         <header className="mb-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <Flag size={32} weight="fill" className="text-primary" />
+              <Logo size={40} className="text-primary" />
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
                   Circuit Sketch
