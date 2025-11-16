@@ -37,6 +37,76 @@ export function getBoundingBox(points: Point[]): BoundingBox {
 }
 
 /**
+ * Check if two line segments intersect
+ */
+function segmentsIntersect(p1: Point, p2: Point, p3: Point, p4: Point): Point | null {
+  const x1 = p1.x, y1 = p1.y
+  const x2 = p2.x, y2 = p2.y
+  const x3 = p3.x, y3 = p3.y
+  const x4 = p4.x, y4 = p4.y
+  
+  const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+  
+  // Lines are parallel
+  if (Math.abs(denom) < 1e-10) return null
+  
+  const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom
+  const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom
+  
+  // Check if intersection is within both line segments
+  if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+    return {
+      x: x1 + t * (x2 - x1),
+      y: y1 + t * (y2 - y1)
+    }
+  }
+  
+  return null
+}
+
+/**
+ * Find the first self-intersection in a path
+ * Returns the index where the intersection occurs, or -1 if no intersection
+ */
+function findFirstSelfIntersection(points: Point[]): number {
+  if (points.length < 4) return -1
+  
+  // Check each line segment against all previous segments (skipping adjacent ones)
+  for (let i = 2; i < points.length - 1; i++) {
+    const currentSegment = { p1: points[i], p2: points[i + 1] }
+    
+    // Check against all previous segments, excluding the immediately adjacent one
+    for (let j = 0; j < i - 1; j++) {
+      const prevSegment = { p1: points[j], p2: points[j + 1] }
+      
+      if (segmentsIntersect(currentSegment.p1, currentSegment.p2, prevSegment.p1, prevSegment.p2)) {
+        // Found intersection - return the index where we should truncate
+        return i
+      }
+    }
+  }
+  
+  return -1
+}
+
+/**
+ * Clean up self-intersecting paths by truncating at the first intersection
+ * and ensuring the path forms a closed loop
+ */
+export function cleanupSelfIntersection(points: Point[]): Point[] {
+  if (points.length < 4) return points
+  
+  const intersectionIndex = findFirstSelfIntersection(points)
+  
+  if (intersectionIndex !== -1) {
+    // Truncate at the intersection point
+    return points.slice(0, intersectionIndex + 1)
+  }
+  
+  return points
+}
+
+/**
  * Normalize points: translate to origin and scale to unit size
  * Note: Does NOT apply rotation - preserves original orientation
  */
