@@ -29,7 +29,7 @@ export function SettingsSheet({ algorithm, onAlgorithmChange }: SettingsSheetPro
         
         <Separator className="my-4" />
         
-        <div className="space-y-6">
+        <div className="space-y-6 px-4">
           <div className="space-y-3">
             <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Matching Algorithm
@@ -41,7 +41,7 @@ export function SettingsSheet({ algorithm, onAlgorithmChange }: SettingsSheetPro
           
           <RadioGroup value={algorithm} onValueChange={(value) => onAlgorithmChange(value as MatchAlgorithm)}>
             <div className="space-y-4">
-              <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+              <div className="flex items-start space-x-3 p-6 border rounded-lg hover:bg-muted/50 transition-colors">
                 <RadioGroupItem value="hausdorff" id="hausdorff" className="mt-0.5" />
                 <div className="flex-1">
                   <Label htmlFor="hausdorff" className="font-medium cursor-pointer">
@@ -53,7 +53,7 @@ export function SettingsSheet({ algorithm, onAlgorithmChange }: SettingsSheetPro
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+              <div className="flex items-start space-x-3 p-6 border rounded-lg hover:bg-muted/50 transition-colors">
                 <RadioGroupItem value="frechet" id="frechet" className="mt-0.5" />
                 <div className="flex-1">
                   <Label htmlFor="frechet" className="font-medium cursor-pointer">
@@ -65,7 +65,7 @@ export function SettingsSheet({ algorithm, onAlgorithmChange }: SettingsSheetPro
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+              <div className="flex items-start space-x-3 p-6 border rounded-lg hover:bg-muted/50 transition-colors">
                 <RadioGroupItem value="turning-angle" id="turning-angle" className="mt-0.5" />
                 <div className="flex-1">
                   <Label htmlFor="turning-angle" className="font-medium cursor-pointer">

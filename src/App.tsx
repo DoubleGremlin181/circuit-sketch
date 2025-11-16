@@ -107,9 +107,6 @@ function App() {
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
                   Circuit Sketch
                 </h1>
-                <p className="text-muted-foreground text-sm md:text-base mt-1">
-                  Draw a shape and match it to F1 circuits
-                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -205,6 +202,28 @@ function App() {
           </div>
         )}
       </div>
+
+      <footer className="container max-w-7xl mx-auto px-4 py-6 md:px-6 lg:px-8">
+        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+          <a 
+            href="https://github.com/DoubleGremlin181/circuit-sketch" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="hover:text-foreground transition-colors"
+          >
+            GitHub
+          </a>
+          <span>•</span>
+          <a 
+            href="https://kavi.sh" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="hover:text-foreground transition-colors"
+          >
+            Author
+          </a>
+        </div>
+      </footer>
     </div>
   )
 }
