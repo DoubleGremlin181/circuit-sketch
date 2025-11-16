@@ -382,26 +382,57 @@ function extractRaceStatistics(content: string, infobox: Record<string, string>)
   }
   
   const driverWinsPatterns = [
+    // Pattern: "Driver Name has won 6 times" or "Driver Name won the race 6 times"
     /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+).*?won\s+(?:the\s+)?(?:race\s+)?(\d+)\s+times?/i,
-    /most\s+(?:wins|successful).*?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+).*?\((\d+)/i,
-    /record.*?(\d+)\s+(?:wins|victories).*?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i
+    // Pattern: "most wins: Driver Name (6)" or "most successful: Driver Name with 6"
+    /most\s+(?:wins|successful).*?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+).*?(?:\(|with\s+)(\d+)/i,
+    // Pattern: "record 6 wins by Driver Name" or "record of 6 victories"
+    /record.*?(?:of\s+)?(\d+)\s+(?:wins|victories).*?(?:by\s+)?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i,
+    // Pattern: "Driver Name holds the record with 6 wins"
+    /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\s+holds?\s+(?:the\s+)?record.*?(?:with\s+)?(\d+)\s+(?:wins|victories)/i,
+    // Pattern: "Driver Name, 6 wins" (common in lists)
+    /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+),?\s+(\d+)\s+wins?/i,
+    // Pattern in infobox: "Most wins (driver): Driver Name (6)"
+    /most\s+wins.*?:.*?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+).*?\((\d+)/i
   ]
   
   for (const pattern of driverWinsPatterns) {
     const match = content.match(pattern)
     if (match) {
-      if (pattern.source.includes('record')) {
-        stats.mostWinsCount = parseInt(match[1], 10)
-        stats.mostWinsDriver = match[2]
-      } else if (pattern.source.includes('most')) {
-        stats.mostWinsDriver = match[1]
-        stats.mostWinsCount = parseInt(match[2], 10)
+      // Determine which group has the number and which has the name based on pattern
+      let driver: string
+      let wins: number
+      
+      if (pattern.source.includes('record.*?(?:of')) {
+        // For "record of 6 wins by Driver Name" pattern
+        wins = parseInt(match[1], 10)
+        driver = match[2]
       } else {
-        stats.mostWinsDriver = match[1]
-        stats.mostWinsCount = parseInt(match[2], 10)
+        // For most patterns: "Driver Name ... 6" format
+        driver = match[1]
+        wins = parseInt(match[2], 10)
       }
-      if (stats.mostWinsCount > 0 && stats.mostWinsCount < 50) {
+      
+      // Validate the win count is reasonable (1-20 for a single circuit)
+      if (wins > 0 && wins <= 20) {
+        stats.mostWinsDriver = driver
+        stats.mostWinsCount = wins
         break
+      }
+    }
+  }
+  
+  // Also check infobox for most wins data
+  for (const [key, value] of Object.entries(infobox)) {
+    if (key.includes('most wins') || key.includes('most successful')) {
+      // Try to extract "Driver Name (6 wins)" or similar
+      const match = value.match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+).*?\((\d+)/i)
+      if (match && !stats.mostWinsDriver) {
+        const wins = parseInt(match[2], 10)
+        if (wins > 0 && wins <= 20) {
+          stats.mostWinsDriver = match[1]
+          stats.mostWinsCount = wins
+        }
       }
     }
   }

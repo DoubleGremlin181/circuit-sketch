@@ -11,8 +11,12 @@
     "corners": 11,
     "firstGP": "1950",
     "totalRaces": 73,
-    "yearRange": "1950-2024",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Monza_Circuit"
+    "yearRange": "1950-2025",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Monza_Circuit",
+    "mostWins": {
+      "driver": "Michael Schumacher",
+      "wins": 5
+    }
   },
   "monaco": {
     "facts": [
@@ -26,8 +30,12 @@
     "corners": 19,
     "firstGP": "1950",
     "totalRaces": 69,
-    "yearRange": "1950-2024",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Circuit_de_Monaco"
+    "yearRange": "1950-2025",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Circuit_de_Monaco",
+    "mostWins": {
+      "driver": "Ayrton Senna",
+      "wins": 6
+    }
   },
   "silverstone": {
     "facts": [
@@ -41,8 +49,12 @@
     "corners": 18,
     "firstGP": "1950",
     "totalRaces": 57,
-    "yearRange": "1950-2024",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Silverstone_Circuit"
+    "yearRange": "1950-2025",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Silverstone_Circuit",
+    "mostWins": {
+      "driver": "Lewis Hamilton",
+      "wins": 8
+    }
   },
   "spa": {
     "facts": [
@@ -56,8 +68,12 @@
     "corners": 19,
     "firstGP": "1950",
     "totalRaces": 54,
-    "yearRange": "1950-2024",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Circuit_de_Spa-Francorchamps"
+    "yearRange": "1950-2025",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Circuit_de_Spa-Francorchamps",
+    "mostWins": {
+      "driver": "Michael Schumacher",
+      "wins": 6
+    }
   },
   "suzuka": {
     "facts": [
@@ -71,8 +87,12 @@
     "corners": 18,
     "firstGP": "1987",
     "totalRaces": 35,
-    "yearRange": "1987-2024",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Suzuka_International_Racing_Course"
+    "yearRange": "1987-2025",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Suzuka_International_Racing_Course",
+    "mostWins": {
+      "driver": "Michael Schumacher",
+      "wins": 6
+    }
   },
   "interlagos": {
     "facts": [
@@ -86,8 +106,12 @@
     "corners": 15,
     "firstGP": "1973",
     "totalRaces": 48,
-    "yearRange": "1973-2024",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Jos%C3%A9_Carlos_Pace"
+    "yearRange": "1973-2025",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Jos%C3%A9_Carlos_Pace",
+    "mostWins": {
+      "driver": "Alain Prost",
+      "wins": 6
+    }
   },
   "albert-park": {
     "facts": [
@@ -101,8 +125,12 @@
     "corners": 14,
     "firstGP": "1996",
     "totalRaces": 26,
-    "yearRange": "1996-2024",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Albert_Park_Circuit"
+    "yearRange": "1996-2025",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Albert_Park_Circuit",
+    "mostWins": {
+      "driver": "Michael Schumacher",
+      "wins": 4
+    }
   },
   "americas": {
     "facts": [
@@ -116,8 +144,12 @@
     "corners": 20,
     "firstGP": "2012",
     "totalRaces": 11,
-    "yearRange": "2012-2024",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Circuit_of_the_Americas"
+    "yearRange": "2012-2025",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Circuit_of_the_Americas",
+    "mostWins": {
+      "driver": "Lewis Hamilton",
+      "wins": 5
+    }
   },
   "bahrain": {
     "facts": [
@@ -131,8 +163,12 @@
     "corners": 15,
     "firstGP": "2004",
     "totalRaces": 19,
-    "yearRange": "2004-2024",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Bahrain_International_Circuit"
+    "yearRange": "2004-2025",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Bahrain_International_Circuit",
+    "mostWins": {
+      "driver": "Lewis Hamilton",
+      "wins": 5
+    }
   },
   "baku": {
     "facts": [
@@ -146,7 +182,7 @@
     "corners": 20,
     "firstGP": "2016",
     "totalRaces": 7,
-    "yearRange": "2016-2024",
+    "yearRange": "2016-2025",
     "wikipediaUrl": "https://en.wikipedia.org/wiki/Baku_City_Circuit"
   },
   "catalunya": {
@@ -161,8 +197,12 @@
     "corners": 16,
     "firstGP": "1991",
     "totalRaces": 32,
-    "yearRange": "1991-2024",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Circuit_de_Barcelona-Catalunya"
+    "yearRange": "1991-2025",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Circuit_de_Barcelona-Catalunya",
+    "mostWins": {
+      "driver": "Michael Schumacher",
+      "wins": 6
+    }
   },
   "hungaroring": {
     "facts": [
@@ -176,8 +216,12 @@
     "corners": 14,
     "firstGP": "1986",
     "totalRaces": 38,
-    "yearRange": "1986-2024",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Hungaroring"
+    "yearRange": "1986-2025",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Hungaroring",
+    "mostWins": {
+      "driver": "Lewis Hamilton",
+      "wins": 8
+    }
   },
   "imola": {
     "facts": [
@@ -191,7 +235,7 @@
     "corners": 19,
     "firstGP": "1980",
     "totalRaces": 28,
-    "yearRange": "1980-2024",
+    "yearRange": "1980-2025",
     "wikipediaUrl": "https://en.wikipedia.org/wiki/Autodromo_Enzo_e_Dino_Ferrari"
   },
   "jeddah": {
@@ -206,7 +250,7 @@
     "corners": 27,
     "firstGP": "2021",
     "totalRaces": 3,
-    "yearRange": "2021-2024",
+    "yearRange": "2021-2025",
     "wikipediaUrl": "https://en.wikipedia.org/wiki/Jeddah_Corniche_Circuit"
   },
   "marina-bay": {
@@ -221,7 +265,7 @@
     "corners": 19,
     "firstGP": "2008",
     "totalRaces": 15,
-    "yearRange": "2008-2024",
+    "yearRange": "2008-2025",
     "wikipediaUrl": "https://en.wikipedia.org/wiki/Marina_Bay_Street_Circuit"
   },
   "miami": {
@@ -236,7 +280,7 @@
     "corners": 19,
     "firstGP": "2022",
     "totalRaces": 2,
-    "yearRange": "2022-2024",
+    "yearRange": "2022-2025",
     "wikipediaUrl": "https://en.wikipedia.org/wiki/Miami_International_Autodrome"
   },
   "red-bull-ring": {
@@ -251,8 +295,12 @@
     "corners": 10,
     "firstGP": "1970",
     "totalRaces": 36,
-    "yearRange": "1970-2024",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Red_Bull_Ring"
+    "yearRange": "1970-2025",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Red_Bull_Ring",
+    "mostWins": {
+      "driver": "Max Verstappen",
+      "wins": 5
+    }
   },
   "rodriguez": {
     "facts": [
@@ -266,7 +314,7 @@
     "corners": 17,
     "firstGP": "1963",
     "totalRaces": 22,
-    "yearRange": "1963-2024",
+    "yearRange": "1963-2025",
     "wikipediaUrl": "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Hermanos_Rodr%C3%ADguez"
   },
   "shanghai": {
@@ -281,7 +329,7 @@
     "corners": 16,
     "firstGP": "2004",
     "totalRaces": 18,
-    "yearRange": "2004-2024",
+    "yearRange": "2004-2025",
     "wikipediaUrl": "https://en.wikipedia.org/wiki/Shanghai_International_Circuit"
   },
   "vegas": {
@@ -296,7 +344,7 @@
     "corners": 17,
     "firstGP": "2023",
     "totalRaces": 1,
-    "yearRange": "2023-2024",
+    "yearRange": "2023-2025",
     "wikipediaUrl": "https://en.wikipedia.org/wiki/Las_Vegas_Grand_Prix"
   },
   "villeneuve": {
@@ -311,7 +359,7 @@
     "corners": 14,
     "firstGP": "1978",
     "totalRaces": 42,
-    "yearRange": "1978-2024",
+    "yearRange": "1978-2025",
     "wikipediaUrl": "https://en.wikipedia.org/wiki/Circuit_Gilles_Villeneuve"
   },
   "yas-marina": {
@@ -326,7 +374,7 @@
     "corners": 16,
     "firstGP": "2009",
     "totalRaces": 15,
-    "yearRange": "2009-2024",
+    "yearRange": "2009-2025",
     "wikipediaUrl": "https://en.wikipedia.org/wiki/Yas_Marina_Circuit"
   },
   "zandvoort": {
@@ -341,7 +389,7 @@
     "corners": 14,
     "firstGP": "1952",
     "totalRaces": 32,
-    "yearRange": "1952-2024",
+    "yearRange": "1952-2025",
     "wikipediaUrl": "https://en.wikipedia.org/wiki/Circuit_Zandvoort"
   },
   "hockenheim": {
@@ -356,7 +404,7 @@
     "corners": 17,
     "firstGP": "1970",
     "totalRaces": 35,
-    "yearRange": "1970-2024"
+    "yearRange": "1970-2025"
   },
   "ricard": {
     "facts": [
@@ -370,7 +418,7 @@
     "corners": 15,
     "firstGP": "1971",
     "totalRaces": 18,
-    "yearRange": "1971-2024"
+    "yearRange": "1971-2025"
   },
   "sochi": {
     "facts": [
@@ -412,6 +460,6 @@
     "corners": 27,
     "firstGP": "2021",
     "totalRaces": 3,
-    "yearRange": "2021-2024"
+    "yearRange": "2021-2025"
   }
 }

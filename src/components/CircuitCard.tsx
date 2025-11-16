@@ -63,7 +63,7 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
           </div>
         </CardHeader>
         
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
           {hasBasicInfo && (
             <div className="flex flex-wrap gap-2">
               {circuit.firstGP && (
@@ -142,7 +142,7 @@ export function CircuitCard({ circuit, matchPercentage }: CircuitCardProps) {
                 <h4 className="font-medium text-sm mb-3 text-muted-foreground uppercase tracking-wide">
                   Circuit Facts
                 </h4>
-                <ScrollArea className="h-[400px] pr-4">
+                <ScrollArea className="max-h-[400px] pr-4">
                   <ul className="space-y-3">
                     {circuit.facts.map((fact, index) => (
                       <motion.li
