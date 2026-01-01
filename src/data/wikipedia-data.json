@@ -16,7 +16,7 @@
     "corners": 14,
     "firstGP": "1929",
     "lapRecord": "1:46.5 (Rudolf Caracciola, 1937)",
-    "yearRange": "2022-2025"
+    "yearRange": "2022-2026"
   },
   "silverstone": {
     "facts": [
@@ -48,7 +48,7 @@
     "corners": 25,
     "firstGP": "1921",
     "lapRecord": "5:04.100 (Hermann Lang, 1937)",
-    "yearRange": "1985-2025"
+    "yearRange": "1985-2026"
   },
   "suzuka": {
     "facts": []
@@ -76,7 +76,7 @@
     "corners": 19,
     "firstGP": "2012",
     "lapRecord": "1:33.284",
-    "yearRange": "2014-2025"
+    "yearRange": "2014-2026"
   },
   "bahrain": {
     "facts": [
@@ -168,7 +168,7 @@
     "corners": 16,
     "firstGP": "1986",
     "lapRecord": "1:30.149 (Nelson Piquet, 1987)",
-    "yearRange": "2011-2025"
+    "yearRange": "2011-2026"
   },
   "imola": {
     "facts": []
@@ -273,7 +273,7 @@
     "corners": 10,
     "firstGP": "1959",
     "lapRecord": "1:17.631 (Norm Hunter, 1982)",
-    "yearRange": "2015-2025"
+    "yearRange": "2015-2026"
   },
   "shanghai": {
     "facts": [
@@ -282,7 +282,7 @@
       "The Shanghai International Circuit is the first in China to be purpose-built for Formula One and it hosts FIA Formula One World Championship Chinese Grand Prix every year since 2004.",
       "The Shanghai International Circuit features over 10 top-tier domestic car racing events annually.",
       "As a nationally recognized 4A-rated tourist attraction, the circuit features tourism, shopping, dining, entertainment, and sports.",
-      "There’s a unique start to the lap as the drivers fly into the ever-tightening Turns 1 and 2, before they dart left through 3 and 4.",
+      "There's a unique start to the lap as the drivers fly into the ever-tightening Turns 1 and 2, before they dart left through 3 and 4.",
       "The super-high g force Turns 7 and 8 are loved by the drivers, while the circuit also features one of the longest straights on the calendar, the 1.2 km (0.7 mi) stretch that separates turns 13 and 14.",
       "Michael Schumacher's official race lap record of 1:32.238 has stood since 2004."
     ],
@@ -300,7 +300,7 @@
       "With a length of 6.201 km (3.853 mi) and consisting of 17 corners, the Grand Prix lasts 50 laps, giving a race distance of 309.958 km (192.599 mi).",
       "The circuit is located next to many of the most famous casinos, including a 1.9 km (1.2 mi) straight down the Las Vegas Strip, as well as two other lengthy straight sections."
     ],
-    "yearRange": "1982-2025",
+    "yearRange": "1982-2026",
     "mostWins": {
       "driver": "Max Verstappen",
       "wins": 2
@@ -368,7 +368,7 @@
     "corners": 19,
     "firstGP": "1948",
     "lapRecord": "1:19.23 (Jacky Ickx, 1970)",
-    "yearRange": "1985-2025"
+    "yearRange": "1985-2026"
   },
   "sakhir": {
     "facts": [
