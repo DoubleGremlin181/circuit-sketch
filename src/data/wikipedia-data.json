@@ -63,10 +63,33 @@
     "facts": []
   },
   "americas": {
-    "facts": []
+    "facts": [
+      "It previously hosted the Australian V8 Supercars, the Americas Rallycross Championship, the American Le Mans Series, the Rolex Sports Car Series, the IMSA SportsCar Championship and the IndyCar Classic.",
+      "The circuit and Grand Prix were first proposed in the middle of 2010.",
+      "The circuit was the first in the United States to be purpose-built for Formula One.",
+      "and Tilke Engineers & Architects designed the track, and Austin Commercial, a subsidiary of Austin Industries, was the general contractor.",
+      "The Grand Plaza, Observation Structure, Tower Amphitheater, and Main Grandstand were designed by Austin-based architectural firm Miró Rivera Architects.",
+      "The first tasks were building the silt fences, taking core samples, and shredding existing vegetation.",
+      "The first layer of asphalt was completed on August 3, 2012.",
+      "The track was officially opened on October 21, with Mario Andretti running the ceremonial first laps in a Lotus 79, the car he drove when he became the last American to win the World Drivers' Championship in 1978."
+    ],
+    "corners": 19,
+    "firstGP": "2012",
+    "lapRecord": "1:33.284",
+    "yearRange": "2014-2026"
   },
   "bahrain": {
-    "facts": []
+    "facts": [
+      "In 2011 the circuit was scheduled to be the first GP of the season.",
+      "2014 saw the track host its first ever Grand Prix under lights, as the race was scheduled as a night race to celebrate the tenth year of Formula 1 at the circuit.",
+      "The 2004 Grand Prix was the first  Formula One race held in the Middle East.",
+      "In the past the circuit has hosted the FIA GT Championship, Speedcar Series, Australian V8 Supercars, GP2 Asia Series, and a one-off Bahrain Superprix involving Formula Three cars, following on from the collapsed Korea Super Prix.",
+      "The first ever Formula BMW World Final took place in Bahrain."
+    ],
+    "corners": 15,
+    "firstGP": "2004",
+    "lapRecord": "1:30.252 (Michael Schumacher, 2004)",
+    "yearRange": "2004-2009"
   },
   "baku": {
     "facts": []
