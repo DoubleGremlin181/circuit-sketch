@@ -5,13 +5,13 @@
   "monaco": {
     "facts": [
       "Louis Chiron did it at the non-championship 1931 Monaco Grand Prix; 82 years later, Stefano Coletti crossed the line in first position at the sprint race of the 2013 Monaco GP2 Series round.",
+      "Leclerc was the first Monégasque to win the Monaco Grand Prix as an event of the Formula One World Championship.",
+      "One year later, Lando Norris clocked the fastest time in Monaco and the first ever lap to be below the 1:10’s there as well, he would go on to win the race afterwards.",
       "The race circuit is narrow, with many elevation shifts and tight corners.",
       "These features make it perhaps the most demanding track in Formula One racing.",
       "It contains both the slowest corner in Formula One (the Fairmont Hairpin, taken at just 48 km/h or 30 mph) and one of the quickest (the flat out kink in the tunnel, three turns beyond the hairpin, taken at 260 km/h or 160 mph).",
       "This is a nearly 90-degree right-hand bend usually taken in first or second gear.",
-      "This corner has seen many first lap accidents, although these are less common since the removal of the mini roundabout on the apex of the corner before the 2003 event, making the entrance to the corner wider.",
-      "The cars then head uphill along Avenue d'Ostende, before changing down for the long left-hander at Massenet.",
-      "The maximum gradient in this part of the circuit is around 12%."
+      "This corner has seen many first lap accidents, although these are less common since the removal of the mini roundabout on the apex of the corner before the 2003 event, making the entrance to the corner wider."
     ],
     "corners": 14,
     "firstGP": "1929",
@@ -42,8 +42,8 @@
       "The original Spa-Francorchamps circuit was essentially a speed course, with drivers managing higher average speeds than on other road race tracks.",
       "Around 2001, a new bypass road N62c was built to the East, and the track was closed to the public as the road from Stavelot to Blanchimont became a cul-de-sac.",
       "Near Malmedy, the Masta straight began, which was only interrupted by the Masta Kink between farm houses before arriving at the town of Stavelot.",
-      "This made it an extraordinarily difficult mental challenge, because most of the corners were taken at more than 290 km/h (180 mph) and were not quite flat – every corner was as important as the one before it.",
-      "The slightest error of any kind carried multiple harsh consequences, but this also worked inversely: huge advantages could be gained if a driver came out of a corner slightly faster."
+      "Before the 1979 changes, Spa-Francorchamps was the fastest road circuit in Europe, and it had a reputation for being dangerous and very fast – it demanded calmness from drivers, and most were frightened of it.",
+      "The former Spa circuit was distinguished by its sustained high-speed characteristics, wherein drivers experienced little to no reduction in velocity throughout a lap duration of approximately three to four minutes."
     ],
     "corners": 25,
     "firstGP": "1921",
@@ -78,19 +78,66 @@
     "facts": []
   },
   "hockenheimring": {
-    "facts": []
+    "facts": [
+      "The man behind it is Ernst Christ, a young timekeeper who felt that a racing track should be built in his hometown of Hockenheim.",
+      "This first layout of the track was around twelve kilometres long and consisted of a large triangle-like section, a hairpin in the city and two straights connecting them.",
+      "This version of the circuit was just over seven and a half kilometres long and consisted of the original two long straights, with the Ostkurve in the forest and the original hairpin inside Hockenheim joining them together.",
+      "After Jim Clark was killed on 7 April 1968 in a Formula 2 racing accident, two fast chicanes were added and the track was lined with crash barriers in 1970.",
+      "A small memorial was placed near the first chicane (which was named after him), at the site of his accident.",
+      "In 1982, another chicane was added at the Ostkurve (east curve), after Patrick Depailler was killed there in 1980, and the first chicane was made slower as well.",
+      "For the 1992 German Grand Prix, the Ostkurve was changed yet again, from a quick right turn into a more complex right-left-right chicane, after Érik Comas crashed there in 1991.",
+      "The second chicane was renamed after Ayrton Senna, after his death at the 1994 San Marino Grand Prix."
+    ],
+    "corners": 9,
+    "firstGP": "1932",
+    "lapRecord": "2:13.300 (Bob Mc, 1957)",
+    "yearRange": "1977-2006"
   },
   "hungaroring": {
-    "facts": []
+    "facts": [
+      "Both Hungary's Zsolt Baumgartner and Poland's Robert Kubica made their debut on this track as the first F1 drivers of their countries.",
+      "The 2006 Hungarian Grand Prix was the first wet Grand Prix at the Hungaroring.",
+      "This saw the retirement of many drivers including championship rivals Fernando Alonso and Michael Schumacher and gave Jenson Button and the reborn Honda F1 team their first win.",
+      "Fernando Alonso also earned his first Grand Prix victory at this in 2003, declaring it his favourite track as a result.",
+      "The technical driving center of the Hungaroring held former racer Gerhard Berger's name from 1998 until 2005 but later it was changed to Allianz.",
+      "The track also has named curves: Turn 1 is named after Nelson Piquet Sr., turn 2 is named after Lewis Hamilton due to his record eight victories.",
+      "In 1986, it became the location of the first Formula One Grand Prix behind the Iron Curtain.",
+      "They wanted a street circuit similar to the Circuit de Monaco to be built in the Népliget – Budapest's largest park – but the government decided to build a new circuit just outside the city near a major highway."
+    ],
+    "corners": 16,
+    "firstGP": "1986",
+    "lapRecord": "1:30.149 (Nelson Piquet, 1987)",
+    "yearRange": "2011-2026"
   },
   "imola": {
     "facts": []
   },
   "jeddah": {
-    "facts": []
+    "facts": [
+      "The Formula One track has a length of 6.174 km (3.836 mi), the third longest on the Formula One calendar after Spa-Francorchamps and Las Vegas.",
+      "It is also the fastest street course, with a record average speed of 254.6 km/h (158.2 mph) for the 2025 pole position.",
+      "Also in February 2025, Jeddah Corniche Circuit hosted the Saudi Arabian round of the Formula E championship instead of Riyadh Street Circuit.",
+      "The Jeddah Corniche Circuit (Arabic: حلبة كورنيش جدة) is a motor racing street circuit in Jeddah, Saudi Arabia."
+    ],
+    "corners": 12,
+    "firstGP": "2021",
+    "lapRecord": "1:16.986 (Gilles Magnus, 2022)",
+    "yearRange": "2022-2024"
   },
   "marina-bay": {
-    "facts": []
+    "facts": [
+      "The track is 4.927 km (3.061 mi) long in a harbourside location similar in style to the Circuit de Monaco and the Valencia Street Circuit.",
+      "The circuit was designed by KBR, and is a modification of the original one first proposed by Hermann Tilke.",
+      "The circuit held a unique record of having at least one safety car appearance in every Grand Prix until the 2024 race.",
+      "A temporary road leads from the pit area and under the Benjamin Sheares Bridge to Republic Boulevard and turns onto Raffles Boulevard.",
+      "It joins Raffles Avenue, then returning to the pit area via a second temporary road around the Singapore Flyer.",
+      "2008 World Champion Lewis Hamilton commented that it was twice as hard to negotiate as the more famous Circuit de Monaco and unexpectedly physical – requiring double the amount of energy over a single lap as compared to the Monaco circuit.",
+      "Several drivers, including Sébastien Bourdais and Fernando Alonso, expressed their concern about the high and harsh kerbs at the chicane at turn 10 of the street circuit.",
+      "They also raised concerns that the bumps would pitch them into the wall on the outside of the corner."
+    ],
+    "corners": 23,
+    "firstGP": "2008",
+    "lapRecord": "1:45.599"
   },
   "marina_bay": {
     "facts": []
